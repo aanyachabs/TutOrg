@@ -1,0 +1,2513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="TutOrg"/>
+<meta name="theme-color" content="#1A2740"/>
+<title>TutOrg</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#0F1C2E;--card:rgba(255,255,255,.05);--navy:#FFFFFF;--accent:#E8703A;
+  --accentL:rgba(232,112,58,.15);--green:#3DB868;--greenL:rgba(61,184,104,.15);
+  --gold:#F0B429;--goldL:rgba(240,180,41,.15);--border:rgba(255,255,255,.08);--muted:rgba(255,255,255,.4);
+  --card-shadow:0 2px 8px rgba(0,0,0,.3),0 8px 32px rgba(0,0,0,.4);
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px);--safe-right:env(safe-area-inset-right,0px);
+  --sidebar-bg:linear-gradient(175deg,#0A1628 0%,#071020 100%);
+  --content-bg:linear-gradient(160deg,#0F1C2E 0%,#0A1628 100%);
+  --input-bg:rgba(255,255,255,.07);--input-color:#fff;
+  --modal-bg:linear-gradient(170deg,#1A2E48 0%,#162236 100%);
+  --modal-header-bg:rgba(22,34,54,.95);--modal-title:#fff;
+  --sync-bg:rgba(255,255,255,.03);
+  --prog-track:rgba(255,255,255,.08);
+  --slot-bg:rgba(232,112,58,.08);
+  --drop-bg:rgba(255,255,255,.03);--drop-border:rgba(255,255,255,.15);
+  --text-primary:#ffffff;--text-muted:rgba(255,255,255,.4);
+}
+[data-theme="light"]{
+  --bg:#F7F4F0;--card:#FFFFFF;--navy:#1A2740;--accent:#B5522A;
+  color-scheme:light;
+  --accentL:#F5E8E1;--green:#2E7D45;--greenL:#E3F5E8;
+  --gold:#C49A2A;--goldL:#FEF3D0;--border:#EAE4DD;--muted:#8A8078;
+  --card-shadow:0 1px 3px rgba(0,0,0,.04),0 6px 20px rgba(0,0,0,.07);
+  --sidebar-bg:linear-gradient(175deg,#1A2740 0%,#162236 100%);
+  --content-bg:#F7F4F0;
+  --input-bg:#ffffff;--input-color:#1A2740;
+  --modal-bg:#ffffff;--modal-header-bg:rgba(255,255,255,.96);--modal-title:#1A2740;
+  --sync-bg:linear-gradient(90deg,#0F1C2E,#1A2740);
+  --prog-track:#EAE4DD;
+  --slot-bg:#F5E8E1;--drop-bg:#F7F4F0;--drop-border:#EAE4DD;
+  --text-primary:#1A2740;--text-muted:#8A8078;
+}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text-primary);color-scheme:dark;}
+[data-theme="light"] html,[data-theme="light"] body,body[data-theme="light"]{color-scheme:light;}
+#app{height:100%;display:flex;flex-direction:column;}
+
+/* ── THEME TOGGLE ── */
+.theme-toggle{display:flex;align-items:center;gap:6px;width:100%;padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-size:12px;font-family:inherit;background:rgba(255,255,255,.05);color:rgba(255,255,255,.4);font-weight:600;margin-bottom:6px;transition:all .15s;}
+.theme-toggle:hover{background:rgba(255,255,255,.09);color:rgba(255,255,255,.7);}
+.toggle-track{width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,.15);position:relative;margin-left:auto;transition:background .2s;flex-shrink:0;}
+.toggle-thumb{width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.3);}
+[data-theme="light"] .toggle-track{background:var(--accent);}
+[data-theme="light"] .toggle-thumb{transform:translateX(16px);}
+
+
+/* ── AUTH ── */
+#auth-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#1A2740 60%,#2C3E55 100%);padding:40px 24px;position:relative;overflow:hidden;}
+.auth-ring{position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,.05);}
+.auth-logo{width:76px;height:76px;border-radius:22px;background:linear-gradient(135deg,var(--accent),#D4713F);display:flex;align-items:center;justify-content:center;font-size:34px;margin-bottom:20px;box-shadow:0 8px 32px rgba(181,82,42,.5),0 2px 8px rgba(0,0,0,.3);z-index:1;}
+.auth-title{font-size:28px;font-weight:800;color:#fff;letter-spacing:-.03em;margin-bottom:4px;z-index:1;}
+.auth-sub{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:40px;text-align:center;z-index:1;letter-spacing:.01em;}
+.auth-form{width:100%;max-width:320px;z-index:1;display:flex;flex-direction:column;gap:10px;}
+.auth-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px;display:block;}
+.auth-input{width:100%;padding:14px 16px;border-radius:13px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:16px;font-family:inherit;outline:none;-webkit-appearance:none;display:block;transition:border .2s,background .2s;}
+.auth-input::placeholder{color:rgba(255,255,255,.25);}
+.auth-input:focus{border-color:rgba(181,82,42,.7);background:rgba(255,255,255,.1);}
+.auth-btn{width:100%;padding:15px;border-radius:13px;border:none;background:linear-gradient(135deg,#C4623A,var(--accent));color:#fff;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:2px;box-shadow:0 4px 20px rgba(181,82,42,.5);letter-spacing:.02em;transition:transform .15s,box-shadow .15s;}
+.auth-btn.secondary{background:rgba(255,255,255,.1);box-shadow:none;margin-top:0;}
+.auth-google{width:100%;padding:13px;border-radius:11px;border:none;background:#fff;color:#1f1f1f;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.2);letter-spacing:.01em;}
+.auth-google:active{opacity:.88;transform:scale(.98);}
+.auth-divider{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.22);font-size:11px;letter-spacing:.05em;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.1);}
+.auth-note{font-size:11px;color:rgba(255,255,255,.25);text-align:center;line-height:1.65;margin-top:4px;}
+.auth-success{background:rgba(46,125,69,.2);border:1px solid rgba(46,125,69,.35);border-radius:14px;padding:18px;color:#fff;font-size:13px;text-align:center;line-height:1.75;white-space:pre-line;}
+
+/* ── LAYOUT ── */
+#main-app{flex:1;display:flex;overflow:auto;padding-top:var(--safe-top);}
+#sidebar{width:220px;background:var(--sidebar-bg);display:flex;flex-direction:column;flex-shrink:0;padding-left:var(--safe-left);overflow-y:auto;border-right:1px solid rgba(255,255,255,.06);}
+.sb-header{padding:28px 20px 20px;}
+.sb-brand{display:none;}
+.sb-title{font-size:22px;color:#fff;font-weight:900;letter-spacing:-.04em;display:flex;align-items:center;gap:8px;}
+.sb-title::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;box-shadow:0 0 8px rgba(181,82,42,.8);}
+.sb-user{font-size:11px;color:rgba(255,255,255,.28);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:16px;}
+nav{padding:6px 12px;flex:1;}
+.nav-section{font-size:9px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.18em;font-weight:700;padding:12px 8px 4px;}
+.nav-btn{display:flex;align-items:center;gap:11px;width:100%;padding:11px 12px;border-radius:12px;border:none;cursor:pointer;font-size:13px;font-family:inherit;margin-bottom:2px;background:transparent;color:rgba(255,255,255,.5);font-weight:500;transition:all .18s;text-align:left;position:relative;}
+.nav-btn:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85);}
+.nav-btn.active{background:linear-gradient(135deg,rgba(181,82,42,.9),rgba(176,74,34,.8));color:#fff;font-weight:700;box-shadow:0 4px 12px rgba(181,82,42,.35);}
+.nav-btn.active::before{content:'';position:absolute;left:0;top:25%;bottom:25%;width:3px;border-radius:0 3px 3px 0;background:#fff;opacity:.6;}
+.nav-btn:active{transform:scale(.97);}
+.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0;}
+.sb-footer{padding:12px;border-top:1px solid rgba(255,255,255,.06);padding-bottom:calc(12px + var(--safe-bottom));}
+.sb-signout{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;border-radius:10px;border:none;cursor:pointer;font-size:12px;font-family:inherit;background:rgba(255,255,255,.05);color:rgba(255,255,255,.35);font-weight:600;margin-bottom:6px;transition:all .15s;}
+.sb-signout:hover{background:rgba(255,255,255,.09);color:rgba(255,255,255,.6);}
+.sb-count{font-size:10px;color:rgba(255,255,255,.18);padding-left:2px;margin-top:4px;}
+#content{flex:1;overflow:hidden;display:flex;flex-direction:column;padding-right:var(--safe-right);background:var(--content-bg);}
+.page{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:28px 24px;padding-bottom:calc(48px + var(--safe-bottom));}
+.page-wb{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+
+/* ── SYNC BAR ── */
+.sync-bar{height:28px;background:var(--sync-bg);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:6px;font-size:10px;color:rgba(255,255,255,.3);flex-shrink:0;letter-spacing:.06em;text-transform:uppercase;font-weight:600;}
+.sync-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 6px rgba(46,125,69,.8);}
+.sync-dot.pulsing{background:var(--gold);animation:pulse 1s infinite;box-shadow:0 0 6px rgba(196,154,42,.8);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+
+/* ── CARDS ── */
+.card{background:var(--card);backdrop-filter:blur(12px);border-radius:18px;padding:22px 22px;box-shadow:0 2px 8px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.08);margin-bottom:16px;transition:box-shadow .2s,transform .2s;}
+.card:hover{box-shadow:0 4px 20px rgba(0,0,0,.4);}
+.card:last-child{margin-bottom:0;}
+
+/* ── BADGES ── */
+.badge{border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;letter-spacing:.02em;border:1px solid rgba(255,255,255,.08);}
+
+/* ── BUTTONS ── */
+.btn{cursor:pointer;border-radius:10px;font-weight:700;font-family:inherit;transition:all .16s;border:none;-webkit-appearance:none;letter-spacing:.01em;}
+.btn:active{transform:scale(.96);opacity:.88;}
+.btn-primary{background:linear-gradient(135deg,#E8703A,#C4623A);color:#fff;box-shadow:0 4px 16px rgba(232,112,58,.4);}
+.btn-ghost{background:rgba(232,112,58,.1);color:#E8703A;border:1.5px solid rgba(232,112,58,.3)!important;}
+.btn-ghost:hover{background:rgba(232,112,58,.18);}
+.btn-danger{background:rgba(192,57,43,.15);color:#FF6B6B;border:1.5px solid rgba(192,57,43,.3)!important;}
+.btn-danger:hover{background:rgba(192,57,43,.22);}
+.btn-green{background:linear-gradient(135deg,#3DB868,#2E9B55);color:#fff;box-shadow:0 4px 16px rgba(61,184,104,.3);}
+.btn-sm{padding:8px 16px;font-size:12px;border-radius:9px;}
+.btn-md{padding:11px 22px;font-size:13px;}
+
+/* ── FIELDS ── */
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;display:block;}
+.field input,.field select,.field textarea{border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-size:15px;font-family:inherit;outline:none;background:var(--input-bg);width:100%;-webkit-appearance:none;transition:border-color .15s,box-shadow .15s;color:var(--input-color);}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#E8703A;box-shadow:0 0 0 3px rgba(232,112,58,.2);background:rgba(255,255,255,.1);}
+.field textarea{resize:vertical;font-size:14px;line-height:1.65;}
+
+/* ── MODAL ── */
+.modal-backdrop{position:fixed;inset:0;background:rgba(7,16,32,.75);z-index:3000;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(6px);}
+.modal-sheet{background:var(--modal-bg);border-radius:26px 26px 0 0;width:100%;max-height:93vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:var(--safe-bottom);animation:slideUp .26s cubic-bezier(.22,1,.36,1);border-top:1px solid rgba(255,255,255,.1);}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal-handle{width:40px;height:4px;border-radius:2px;background:var(--border);margin:12px auto 0;flex-shrink:0;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 22px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--modal-header-bg);backdrop-filter:blur(12px);z-index:1;}
+.modal-header h3{margin:0;font-size:17px;color:var(--modal-title);font-weight:800;letter-spacing:-.02em;}
+.modal-close{border:none;background:rgba(128,128,128,.15);border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;line-height:1;transition:background .15s;}
+.modal-close:hover{background:rgba(128,128,128,.25);color:var(--text-primary);}
+.modal-body{padding:20px 22px;display:grid;gap:16px;color:var(--text-primary);}
+.modal-full{max-height:96vh;height:96vh;display:flex;flex-direction:column;}
+.modal-full .modal-body{flex:1;overflow:hidden;padding:0;display:flex;flex-direction:column;}
+
+/* ── GRIDS ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;}
+.stat-card{background:var(--card);border-radius:18px;padding:20px 16px;text-align:center;border:1px solid rgba(255,255,255,.08);box-shadow:0 2px 12px rgba(0,0,0,.3);position:relative;overflow:hidden;backdrop-filter:blur(8px);}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),#D4713F);opacity:0;transition:opacity .2s;}
+.stat-card:hover::after{opacity:1;}
+.stat-val{font-size:26px;font-weight:900;letter-spacing:-.03em;}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+
+/* ── PAGE HEADER ── */
+.page-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
+.page-title{font-size:24px;color:var(--text-primary);font-weight:900;margin:0;letter-spacing:-.03em;}
+
+/* ── PROGRESS ── */
+.prog-row{margin-bottom:14px;}
+.prog-labels{display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;font-weight:600;}
+.prog-track{height:7px;background:var(--prog-track);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:4px;transition:width .5s cubic-bezier(.34,1.2,.64,1);}
+
+/* ── MISC ── */
+.slot-pill{background:var(--slot-bg);border-radius:12px;padding:10px 14px;margin-bottom:8px;font-size:13px;border:1px solid rgba(181,82,42,.15);}
+.day-hdr{font-weight:800;font-size:9px;color:var(--accent);text-transform:uppercase;letter-spacing:.18em;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.day-hdr::after{content:'';flex:1;height:1px;background:rgba(181,82,42,.15);}
+.drop-zone{border:2px dashed var(--drop-border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;background:var(--drop-bg);transition:all .2s;}
+.drop-zone:hover{border-color:#E8703A;background:rgba(232,112,58,.1);}
+.drop-zone.has-file{border-color:#3DB868;background:rgba(61,184,104,.1);}
+.ann-toolbar{display:flex;gap:5px;padding:8px 12px;background:var(--bg);border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center;flex-shrink:0;}
+.ann-btn{border:1.5px solid var(--border);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;background:#fff;color:var(--muted);font-family:inherit;transition:all .15s;}
+.ann-btn.active{border-color:var(--accent);background:var(--accentL);color:var(--accent);}
+.ann-body{flex:1;display:flex;overflow:hidden;min-height:0;height:100%;}
+.ann-doc{flex:1;position:relative;overflow-y:auto;-webkit-overflow-scrolling:touch;background:#DDD8D0;min-height:0;height:100%;}
+.ann-notes-panel{width:0;overflow:hidden;border-left:1px solid var(--border);display:flex;flex-direction:column;background:#fff;transition:width .2s;flex-shrink:0;}
+.ann-notes-panel.open{width:200px;}
+.ann-notes-lbl{padding:10px 12px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;flex-shrink:0;}
+.ann-notes-ta{flex:1;border:none;padding:12px;font-size:13px;font-family:inherit;resize:none;outline:none;color:var(--navy);line-height:1.65;width:100%;height:100%;-webkit-overflow-scrolling:touch;}
+.wb-toolbar{display:flex;gap:4px;padding:8px 10px;background:var(--navy);flex-wrap:wrap;align-items:center;flex-shrink:0;}
+.wb-btn{border:1.5px solid rgba(255,255,255,.18);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer;background:transparent;color:rgba(255,255,255,.8);font-family:inherit;font-weight:700;transition:all .15s;}
+.wb-btn.active{border-color:rgba(255,255,255,.8);background:rgba(255,255,255,.15);color:#fff;}
+.wb-dot{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.2);cursor:pointer;flex-shrink:0;transition:transform .1s;}
+.wb-dot.active{border:3px solid rgba(255,255,255,.9);box-shadow:0 0 0 2px rgba(0,0,0,.3);transform:scale(1.15);}
+.wb-sz{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:transparent;border:1.5px solid rgba(255,255,255,.18);color:#fff;font-weight:900;}
+.wb-sz.active{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.8);}
+#wb-wrap{flex:1;position:relative;overflow:hidden;background:#C8C3BB;touch-action:none;}
+#wb-canvas{width:100%;height:100%;cursor:crosshair;display:block;touch-action:none;}
+.wb-text-box{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:#fff;border-radius:14px;padding:14px;box-shadow:0 8px 32px rgba(0,0,0,.18);display:flex;flex-direction:column;gap:8px;z-index:10;min-width:280px;max-width:340px;}
+.msg-pre{background:var(--card);border-radius:12px;padding:16px;font-size:13px;white-space:pre-wrap;font-family:inherit;line-height:1.8;color:var(--text-primary);max-height:55vh;overflow-y:auto;-webkit-overflow-scrolling:touch;border:1px solid rgba(255,255,255,.08);}
+.info-box{padding:12px 16px;border-radius:10px;font-size:12px;line-height:1.7;border:1px solid var(--border);background:var(--card);color:var(--muted);}
+.rates-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
+@media(max-width:480px){
+  #sidebar{width:58px;}
+  .sb-title,.sb-brand,.sb-user,.nav-label,.sb-count{display:none;}
+  .sb-header{padding:20px 8px 12px;}
+  .nav-btn{justify-content:center;padding:13px 0;border-radius:12px;}
+  .sb-signout span{display:none;}
+  .grid-stats{grid-template-columns:1fr 1fr;}
+  .page{padding:20px 16px;padding-bottom:calc(40px + var(--safe-bottom));}
+  .card{padding:18px 16px;}
+  .page-title{font-size:20px;}
+}
+@media(min-width:900px){
+  .grid-stats{grid-template-columns:repeat(4,1fr);}
+  #sidebar{width:230px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="auth-screen" style="display:none"></div>
+  <div id="main-app" style="display:none"></div>
+</div>
+<div id="modal-root"></div>
+<script>
+'use strict';
+// CONFIG
+// Apply saved theme immediately on load
+(function(){
+  var t=localStorage.getItem('tutorg-theme');
+  if(t==='light'){
+    document.documentElement.setAttribute('data-theme','light');
+    document.body.setAttribute('data-theme','light');
+  }
+})();
+
+const SUPA_URL='https://wqtckhabrgptsyfcavrn.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndxdGNraGFicmdwdHN5ZmNhdnJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5OTI5NTEsImV4cCI6MjA4ODU2ODk1MX0.L-g7oMX9yXCI6DaqOSVnrFn2uV13neKYblSCKN-tefE';
+const ADMIN_EMAIL='aanyachabs@gmail.com';
+const TRIAL_DAYS=30;
+const APP_URL='https://aanyachabs.github.io/tutorg';
+
+// SUPABASE CLIENT
+const supa={
+  tok:null,uid:null,
+  hdr(){return{'Content-Type':'application/json','apikey':SUPA_KEY,'Authorization':'Bearer '+(this.tok||SUPA_KEY)};},
+  async signInWithGoogle(){
+    // Redirect to Google OAuth via Supabase
+    const redirectTo=APP_URL;
+    window.location.href=SUPA_URL+'/auth/v1/authorize?provider=google&redirect_to='+encodeURIComponent(redirectTo);
+  },
+  async handleOAuthCallback(){
+    try{
+      const hash=window.location.hash;
+      if(!hash)return false;
+      const params=new URLSearchParams(hash.substring(1));
+      const accessToken=params.get('access_token');
+      const refreshToken=params.get('refresh_token');
+      const type=params.get('type');
+      if(!accessToken||type==='recovery')return false;
+      try{
+        const payload=JSON.parse(atob(accessToken.split('.')[1]));
+        const sessionData={
+          access_token:accessToken,
+          refresh_token:refreshToken||'',
+          expires_at:payload.exp||0,
+          user:{id:payload.sub,email:payload.email||''}
+        };
+        this.save(sessionData);
+        S.user=sessionData.user;
+        history.replaceState(null,'',window.location.pathname);
+        return true;
+      }catch(e){
+        // Token parse failed — clean URL and continue normally
+        history.replaceState(null,'',window.location.pathname);
+        return false;
+      }
+    }catch(e){return false;}
+  },
+  async signUp(email,password){
+    try{
+      const r=await fetch(SUPA_URL+'/auth/v1/signup',{method:'POST',headers:this.hdr(),body:JSON.stringify({email:email,password:password})});
+      const d=await r.json();
+      if(d.access_token){this.tok=d.access_token;this.uid=d.user&&d.user.id;return{ok:true,data:d};}
+      if(d.user){return await this.signIn(email,password);}
+      var msg=d.error_description||d.msg||d.error||JSON.stringify(d);
+      if(msg.includes('already registered')){return{ok:false,error:'Email already registered. Please sign in.'};}
+      return{ok:false,error:'Signup failed: '+msg};
+    }catch(e){return{ok:false,error:'Network error. Check connection.'};}
+  },
+  async signIn(email,password){
+    try{
+      const r=await fetch(SUPA_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:this.hdr(),body:JSON.stringify({email:email,password:password})});
+      const d=await r.json();
+      if(d.access_token){this.tok=d.access_token;this.uid=d.user&&d.user.id;return{ok:true,data:d};}
+      var msg=d.error_description||d.msg||d.error||'';
+      if(msg.includes('Email not confirmed')){return{ok:false,error:'Turn OFF Confirm Email in Supabase > Auth > Providers > Email, then try again.'};}
+      if(msg.includes('Invalid login')){return{ok:false,error:'Wrong email or password. Try again or create a new account.'};}
+      return{ok:false,error:msg||'Sign in failed.'};
+    }catch(e){return{ok:false,error:'Network error. Check connection.'};}
+  },
+  async getSession(){
+    try{
+      const s=localStorage.getItem('ts_sess');
+      if(!s){return null;}
+      const p=JSON.parse(s);
+      if(Date.now()>p.expires_at*1000){localStorage.removeItem('ts_sess');return null;}
+      this.tok=p.access_token;this.uid=p.user&&p.user.id;return p;
+    }catch(e){return null;}
+  },
+  save(s){localStorage.setItem('ts_sess',JSON.stringify(s));this.tok=s.access_token;this.uid=s.user&&s.user.id;},
+  clear(){localStorage.removeItem('ts_sess');this.tok=null;this.uid=null;},
+  async uploadFile(file,path){
+    try{
+      // Upload raw file to Supabase Storage bucket 'materials'
+      const r=await fetch(SUPA_URL+'/storage/v1/object/materials/'+path,{
+        method:'POST',
+        headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+this.tok,'Content-Type':file.type,'x-upsert':'true'},
+        body:file
+      });
+      if(!r.ok){const e=await r.json();return{ok:false,error:e.error||'Upload failed'};}
+      return{ok:true,url:SUPA_URL+'/storage/v1/object/public/materials/'+path};
+    }catch(e){return{ok:false,error:e.message};}
+  },
+  async resetPassword(email){
+    try{
+      const redirectTo='https://strong-narwhal-8e3803.netlify.app';
+      const r=await fetch(SUPA_URL+'/auth/v1/recover',{method:'POST',headers:this.hdr(),body:JSON.stringify({email:email,redirectTo:redirectTo})});
+      return r.ok;
+    }catch(e){return false;}
+  },
+  async updatePassword(newPassword,accessToken){
+    try{
+      const hdrs=Object.assign({},this.hdr(),{'Authorization':'Bearer '+accessToken});
+      const r=await fetch(SUPA_URL+'/auth/v1/user',{method:'PUT',headers:hdrs,body:JSON.stringify({password:newPassword})});
+      const d=await r.json();
+      return d.id?{ok:true}:{ok:false,error:d.error_description||d.msg||'Could not update password'};
+    }catch(e){return{ok:false,error:'Network error'};}
+  },
+  async exchangeToken(refreshToken){
+    try{
+      const r=await fetch(SUPA_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:this.hdr(),body:JSON.stringify({refresh_token:refreshToken})});
+      const d=await r.json();
+      if(d.access_token){this.tok=d.access_token;this.uid=d.user&&d.user.id;return d;}
+      return null;
+    }catch(e){return null;}
+  },
+  async get(table){
+    try{
+      const r=await fetch(SUPA_URL+'/rest/v1/'+table+'?user_id=eq.'+this.uid+'&select=*',{headers:this.hdr()});
+      if(!r.ok){return[];}
+      return r.json();
+    }catch(e){return[];}
+  },
+  async upsert(table,id,data){
+    try{
+      const body=JSON.stringify({id:id,user_id:this.uid,data:data});
+      const r=await fetch(SUPA_URL+'/rest/v1/'+table,{method:'POST',headers:Object.assign({},this.hdr(),{'Prefer':'resolution=merge-duplicates'}),body:body});
+      return r.ok;
+    }catch(e){return false;}
+  },
+  // Subscription: read this user's sub record
+  async getSub(){
+    try{
+      const r=await fetch(SUPA_URL+'/rest/v1/subscriptions?user_id=eq.'+this.uid+'&select=*',{headers:this.hdr()});
+      if(!r.ok)return null;
+      const d=await r.json();
+      return d[0]||null;
+    }catch(e){return null;}
+  },
+  // Subscription: create sub record for new user
+  async createSub(){
+    try{
+      var userEmail=S.subscription&&S.subscription.email||
+        (S.user&&S.user.email)||
+        (this.tok&&JSON.parse(atob(this.tok.split('.')[1])).email)||'';
+      const now=new Date();
+      const expiry=new Date(now.getTime()+TRIAL_DAYS*24*60*60*1000);
+      const body=JSON.stringify({user_id:this.uid,email:userEmail,trial_start:now.toISOString(),trial_end:expiry.toISOString(),status:'trial',paid_until:null});
+      const r=await fetch(SUPA_URL+'/rest/v1/subscriptions',{method:'POST',headers:Object.assign({},this.hdr(),{'Prefer':'resolution=merge-duplicates'}),body:body});
+      return r.ok;
+    }catch(e){return false;}
+  },
+  // Admin: get ALL subscriptions (only works for admin user due to RLS bypass via service key not available — we use a view)
+  async getAllSubs(){
+    try{
+      const r=await fetch(SUPA_URL+'/rest/v1/subscriptions?select=*&order=trial_start.desc',{headers:this.hdr()});
+      const text=await r.text();
+      if(!r.ok){
+        console.error('getAllSubs failed:',r.status,text);
+        return{error:r.status+': '+text};
+      }
+      return JSON.parse(text);
+    }catch(e){
+      console.error('getAllSubs exception:',e);
+      return{error:e.message};
+    }
+  },
+  // Admin: extend a user's access by 30 days from today
+  async extendSub(userId,currentPaidUntil){
+    try{
+      var base=currentPaidUntil?new Date(currentPaidUntil):new Date();
+      if(base<new Date())base=new Date();
+      var newExpiry=new Date(base.getTime()+30*24*60*60*1000);
+      const r=await fetch(SUPA_URL+'/rest/v1/subscriptions?user_id=eq.'+userId,{
+        method:'PATCH',
+        headers:Object.assign({},this.hdr(),{'Prefer':'return=representation'}),
+        body:JSON.stringify({status:'active',paid_until:newExpiry.toISOString()})
+      });
+      return r.ok;
+    }catch(e){return false;}
+  },
+  // Admin: revoke access
+  async revokeSub(userId){
+    try{
+      const r=await fetch(SUPA_URL+'/rest/v1/subscriptions?user_id=eq.'+userId,{
+        method:'PATCH',
+        headers:Object.assign({},this.hdr(),{'Prefer':'return=representation'}),
+        body:JSON.stringify({status:'revoked',paid_until:null})
+      });
+      return r.ok;
+    }catch(e){return false;}
+  }
+};
+
+// RATE TABLE
+const DEFAULT_RATES={8:{'1-4':3000,'5-8':3500,'9-12':4000},12:{'1-4':4000,'5-8':4500,'9-12':5400},16:{'1-4':5000,'5-8':5500,'9-12':6700},20:{'1-4':6000,'5-8':6500,'9-12':8000}};
+function gradeKey(g,rt){
+  // With new structure, find the band whose label/key matches grade number
+  var n=parseInt(g);
+  if(rt&&rt.bands){
+    // Try to match by key range e.g. '1-4'
+    for(var i=0;i<rt.bands.length;i++){
+      var parts=rt.bands[i].key.split('-');
+      if(parts.length===2&&n>=parseInt(parts[0])&&n<=parseInt(parts[1]))return rt.bands[i].key;
+    }
+    return rt.bands[rt.bands.length-1]?rt.bands[rt.bands.length-1].key:'9-12';
+  }
+  if(n>=1&&n<=4)return'1-4';if(n>=5&&n<=8)return'5-8';return'9-12';
+}
+function getRate(rt,sessions,gradeNum,isFamily,familyRate){
+  if(isFamily&&familyRate)return Number(familyRate);
+  // Support both old flat structure and new {tierSessions,bands,rates} structure
+  var rates=rt.rates||rt;
+  var tiers=rt.tierSessions||[8,12,16,20];
+  var gk=gradeKey(gradeNum,rt);
+  var rate=(rates[tiers[0]]&&rates[tiers[0]][gk])||3000;
+  for(var i=0;i<tiers.length;i++){var t=tiers[i];if(sessions>=t&&rates[t]&&rates[t][gk])rate=rates[t][gk];}
+  return rate;
+}
+function sessionCost(rate,duration){
+  // rate is per 60 min; scale proportionally to actual duration
+  return Math.round(rate*(duration||60)/60);
+}
+
+// STATE
+var S={
+  tab:'dashboard',user:null,
+  profile:{name:'',onboarded:false},
+  policies:{
+    paymentDays:3,
+    noShowCharge:'full',   // 'full' | 'half' | 'none'
+    cancellationHours:24,
+    lateCancellationCharge:'half', // 'full' | 'half' | 'none'
+    customNote:''
+  },
+  students:[],sessions:[],schedule:[],materials:[],tests:[],
+  rateTable:JSON.parse(JSON.stringify(DEFAULT_RATES)),
+  payments:{}, // paymentStatus: {studentId: 'paid'|'unpaid'|'pending'}
+  subscription:{sub:null,hasAccess:true,daysLeft:null,isAdmin:false},
+  syncStatus:'idle',rowIds:{}
+};
+
+// SYNC
+var syncTimer=null;
+function scheduleSync(){clearTimeout(syncTimer);syncTimer=setTimeout(syncAll,1400);}
+async function syncAll(){
+  if(!supa.tok)return;
+  setSyncStatus('syncing');
+  try{
+    if(!S.rowIds.students)S.rowIds.students=genId();
+    if(!S.rowIds.sessions)S.rowIds.sessions=genId();
+    if(!S.rowIds.schedule)S.rowIds.schedule=genId();
+    if(!S.rowIds.rateTable)S.rowIds.rateTable=genId();
+    if(!S.rowIds.materials)S.rowIds.materials=genId();
+    if(!S.rowIds.profile)S.rowIds.profile=genId();
+    if(!S.rowIds.payments)S.rowIds.payments=genId();
+    if(!S.rowIds.tests)S.rowIds.tests=genId();
+    if(!S.rowIds.policies)S.rowIds.policies=genId();
+    await supa.upsert('students',S.rowIds.students,S.students);
+    await supa.upsert('sessions',S.rowIds.sessions,S.sessions);
+    await supa.upsert('schedule',S.rowIds.schedule,S.schedule);
+    await supa.upsert('rate_table',S.rowIds.rateTable,S.rateTable);
+    await supa.upsert('materials',S.rowIds.materials,S.materials);
+    await supa.upsert('profile',S.rowIds.profile,S.profile);
+    await supa.upsert('payments',S.rowIds.payments,S.payments);
+    await supa.upsert('tests',S.rowIds.tests,S.tests);
+    await supa.upsert('policies',S.rowIds.policies,S.policies);
+    setSyncStatus('synced');
+  }catch(e){setSyncStatus('error');}
+}
+async function loadCloud(){
+  setSyncStatus('syncing');
+  try{
+    var res=await Promise.all([supa.get('students'),supa.get('sessions'),supa.get('schedule'),supa.get('materials'),supa.get('rate_table'),supa.get('profile'),supa.get('payments'),supa.get('tests'),supa.get('policies')]);
+    var stu=res[0],ses=res[1],sch=res[2],mat=res[3],rt=res[4],prof=res[5],pay=res[6],tst=res[7],pol=res[8];
+    if(stu[0]){S.rowIds.students=stu[0].id;S.students=stu[0].data||[];}
+    if(ses[0]){S.rowIds.sessions=ses[0].id;S.sessions=ses[0].data||[];}
+    if(sch[0]){S.rowIds.schedule=sch[0].id;S.schedule=sch[0].data||[];}
+    if(rt[0]){S.rowIds.rateTable=rt[0].id;S.rateTable=rt[0].data||JSON.parse(JSON.stringify(DEFAULT_RATES));}
+    if(mat[0]){S.rowIds.materials=mat[0].id;S.materials=mat[0].data||[];}
+    if(prof[0]){S.rowIds.profile=prof[0].id;S.profile=Object.assign({name:'',onboarded:false},prof[0].data||{});}
+    if(pay[0]){S.rowIds.payments=pay[0].id;S.payments=pay[0].data||{};}
+    if(tst[0]){S.rowIds.tests=tst[0].id;S.tests=tst[0].data||[];}
+    if(pol[0]){S.rowIds.policies=pol[0].id;S.policies=Object.assign({paymentDays:3,noShowCharge:'full',cancellationHours:24,lateCancellationCharge:'half',customNote:''},pol[0].data||{});}
+    setSyncStatus('synced');
+  }catch(e){setSyncStatus('error');}
+}
+function saveMatFiles(){
+  // Files are now synced directly to Supabase - just trigger a sync
+  scheduleSync();
+}
+function setSyncStatus(status){
+  S.syncStatus=status;
+  var dot=document.querySelector('.sync-dot');
+  var txt=document.querySelector('.sync-txt');
+  if(!dot||!txt)return;
+  if(status==='syncing'){dot.className='sync-dot pulsing';dot.style.background='var(--gold)';txt.textContent='Syncing...';}
+  else if(status==='synced'){dot.className='sync-dot';dot.style.background='var(--green)';txt.textContent='All changes saved';}
+  else if(status==='error'){dot.className='sync-dot';dot.style.background='#C0392B';txt.textContent='Sync error';}
+  else{dot.className='sync-dot';txt.textContent='';}
+}
+function genId(){return'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,function(c){var r=Math.random()*16|0;return(c=='x'?r:(r&0x3|0x8)).toString(16);});}
+function mutate(key,fn){fn(S[key]);scheduleSync();renderApp();}
+
+// DOM HELPERS
+var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var NOW=new Date();
+
+function el(tag,attrs){
+  var e=document.createElement(tag);
+  var children=Array.prototype.slice.call(arguments,2);
+  if(attrs){
+    Object.keys(attrs).forEach(function(k){
+      var v=attrs[k];
+      if(k==='style'&&typeof v==='object'){Object.assign(e.style,v);}
+      else if(k.indexOf('on')===0&&typeof v==='function'){e.addEventListener(k.slice(2).toLowerCase(),v);}
+      else if(k==='className'){e.className=v;}
+      else{e.setAttribute(k,v);}
+    });
+  }
+  children.forEach(function(c){if(c==null||c===false)return;e.appendChild(typeof c==='string'?document.createTextNode(c):c);});
+  return e;
+}
+function bdg(txt,c,bg){return el('span',{className:'badge',style:{color:c||'var(--accent)',background:bg||'var(--accentL)'}},txt);}
+function mkBtn(txt,cls,sz,onClick){var b=el('button',{className:'btn '+(cls||'btn-primary')+' '+(sz||'btn-md')},txt);if(onClick)b.addEventListener('click',onClick);return b;}
+function showToast(msg){var t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A2740;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.3);';document.body.appendChild(t);}t.textContent=msg;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(function(){t.style.opacity='0';},2500);}
+function mkCard(){var c=el('div',{className:'card'});Array.prototype.slice.call(arguments).forEach(function(ch){if(ch)c.appendChild(typeof ch==='string'?document.createTextNode(ch):ch);});return c;}
+function fld(label,input){return el('div',{className:'field'},el('label',{},label),input);}
+function mkInp(type,val,onChange,ph,extra){
+  var attrs=Object.assign({type:type,placeholder:ph||''},extra||{});
+  var e=el('input',attrs);e.value=val||'';
+  e.addEventListener('input',function(ev){onChange(ev.target.value);});
+  return e;
+}
+function mkSel(val,opts,onChange){
+  var e=el('select',{});
+  opts.forEach(function(opt){var o=el('option',{value:opt[0]},String(opt[1]));if(String(opt[0])===String(val))o.selected=true;e.appendChild(o);});
+  e.addEventListener('change',function(ev){onChange(ev.target.value);});
+  return e;
+}
+function mkTa(val,onChange,rows,ph){
+  var e=el('textarea',{rows:rows||3,placeholder:ph||''},val||'');
+  e.addEventListener('input',function(ev){onChange(ev.target.value);});
+  return e;
+}
+function closeModal(){document.getElementById('modal-root').innerHTML='';}
+function showModal(title,bodyEl,full){
+  var root=document.getElementById('modal-root');root.innerHTML='';
+  var sheet=el('div',{className:'modal-sheet'+(full?' modal-full':'')});
+  if(!full)sheet.appendChild(el('div',{className:'modal-handle'}));
+  sheet.appendChild(el('div',{className:'modal-header'},el('h3',{},title),el('button',{className:'modal-close',onClick:closeModal},'✕')));
+  var body=el('div',{className:'modal-body'});body.appendChild(bodyEl);sheet.appendChild(body);
+  var bd=el('div',{className:'modal-backdrop'});
+  bd.addEventListener('click',function(e){if(e.target===bd)closeModal();});
+  bd.appendChild(sheet);root.appendChild(bd);
+}
+
+// AUTH
+function renderAuth(){
+  var screen=document.getElementById('auth-screen');screen.innerHTML='';
+  [120,200,300,420,560,700,860].forEach(function(s){screen.appendChild(el('div',{className:'auth-ring',style:{width:s+'px',height:s+'px',top:'50%',left:'50%',transform:'translate(-50%,-50%)'}}));});
+  screen.appendChild(el('div',{className:'auth-logo'},'\uD83C\uDF93'));
+  screen.appendChild(el('div',{className:'auth-title'},'TutOrg'));
+  screen.appendChild(el('div',{className:'auth-sub'},'Hassle-free management for home tutors'));
+  var form=el('div',{className:'auth-form'});
+  var mode='signin';
+  var emailVal='',passVal='',pass2Val='';
+  var errDiv=el('div',{style:{color:'#ff6b6b',fontSize:13,textAlign:'center',minHeight:18,lineHeight:1.5}});
+  var okDiv=el('div',{style:{color:'#5cb85c',fontSize:13,textAlign:'center',minHeight:18,background:'rgba(92,184,92,.15)',borderRadius:8,padding:'8px 12px',display:'none'}});
+
+  function renderForm(){
+    form.innerHTML='';
+    errDiv.textContent='';okDiv.style.display='none';
+
+    if(mode==='reset'){
+      // Reset password screen
+      var emailWrap=el('div',{});
+      emailWrap.appendChild(el('label',{className:'auth-label'},'Your Email Address'));
+      var emailInp=el('input',{className:'auth-input',type:'email',placeholder:'yourname@gmail.com',autocomplete:'email'});
+      emailInp.value=emailVal;
+      emailInp.addEventListener('input',function(e){emailVal=e.target.value;});
+      emailWrap.appendChild(emailInp);
+      form.appendChild(emailWrap);
+      form.appendChild(errDiv);
+      form.appendChild(okDiv);
+      var resetBtn=el('button',{className:'auth-btn'},'Send Reset Link');
+      resetBtn.addEventListener('click',async function(){
+        errDiv.textContent='';
+        if(!emailVal.includes('@')){errDiv.textContent='Please enter a valid email.';return;}
+        resetBtn.disabled=true;resetBtn.textContent='Sending...';
+        var ok=await supa.resetPassword(emailVal);
+        if(ok){
+          okDiv.textContent='Reset link sent to '+emailVal+'. Check your email and click the link to set a new password.';
+          okDiv.style.display='block';
+          resetBtn.textContent='Sent!';
+        } else {
+          errDiv.textContent='Could not send reset email. Check the address and try again.';
+          resetBtn.disabled=false;resetBtn.textContent='Send Reset Link';
+        }
+      });
+      form.appendChild(resetBtn);
+      var backBtn=el('button',{className:'auth-btn secondary'},'Back to Sign In');
+      backBtn.addEventListener('click',function(){mode='signin';renderForm();});
+      form.appendChild(backBtn);
+      setTimeout(function(){emailInp.focus();},100);
+      return;
+    }
+
+    var emailWrap=el('div',{});
+    emailWrap.appendChild(el('label',{className:'auth-label'},'Email Address'));
+    var emailInp=el('input',{className:'auth-input',type:'email',placeholder:'yourname@gmail.com',autocomplete:'email'});
+    emailInp.value=emailVal;
+    emailInp.addEventListener('input',function(e){emailVal=e.target.value;});
+    emailWrap.appendChild(emailInp);
+    var passWrap=el('div',{});
+    passWrap.appendChild(el('label',{className:'auth-label'},'Password'));
+    var passInp=el('input',{className:'auth-input',type:'password',placeholder:mode==='signup'?'Create a password (min 6 chars)':'Your password',autocomplete:mode==='signup'?'new-password':'current-password'});
+    passInp.value=passVal;
+    passInp.addEventListener('input',function(e){passVal=e.target.value;});
+    passWrap.appendChild(passInp);
+    form.appendChild(emailWrap);
+    form.appendChild(passWrap);
+    if(mode==='signup'){
+      var pass2Wrap=el('div',{});
+      pass2Wrap.appendChild(el('label',{className:'auth-label'},'Confirm Password'));
+      var pass2Inp=el('input',{className:'auth-input',type:'password',placeholder:'Repeat your password',autocomplete:'new-password'});
+      pass2Inp.value=pass2Val;
+      pass2Inp.addEventListener('input',function(e){pass2Val=e.target.value;});
+      pass2Wrap.appendChild(pass2Inp);
+      form.appendChild(pass2Wrap);
+    }
+    form.appendChild(errDiv);
+    var mainBtn=el('button',{className:'auth-btn'},mode==='signin'?'Sign In':'Create Account');
+    mainBtn.addEventListener('click',async function(){
+      errDiv.textContent='';
+      if(!emailVal.includes('@')){errDiv.textContent='Please enter a valid email.';return;}
+      if(passVal.length<6){errDiv.textContent='Password must be at least 6 characters.';return;}
+      if(mode==='signup'&&passVal!==pass2Val){errDiv.textContent='Passwords do not match.';return;}
+      mainBtn.disabled=true;mainBtn.textContent=mode==='signin'?'Signing in...':'Creating account...';
+      var result=mode==='signin'?await supa.signIn(emailVal,passVal):await supa.signUp(emailVal,passVal);
+      if(result.ok){supa.save(result.data);S.user=result.data.user;await bootApp();}
+      else{errDiv.textContent=result.error;mainBtn.disabled=false;mainBtn.textContent=mode==='signin'?'Sign In':'Create Account';}
+    });
+    form.appendChild(mainBtn);
+    if(mode==='signin'){
+      var forgotBtn=el('button',{className:'auth-btn secondary'},'Forgot password?');
+      forgotBtn.addEventListener('click',function(){mode='reset';renderForm();});
+      form.appendChild(forgotBtn);
+    }
+    var switchBtn=el('button',{className:'auth-btn secondary'});
+    switchBtn.textContent=mode==='signin'?'No account yet? Create one':'Already have an account? Sign in';
+    switchBtn.addEventListener('click',function(){mode=mode==='signin'?'signup':'signin';renderForm();});
+    form.appendChild(switchBtn);
+    setTimeout(function(){emailInp.focus();},100);
+  }
+  // Google sign-in button
+  var googleWrap=el('div',{className:'auth-form',style:{marginTop:0}});
+  var googleBtn=el('button',{className:'auth-google'});
+  var gsvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  gsvg.setAttribute('width','18');gsvg.setAttribute('height','18');gsvg.setAttribute('viewBox','0 0 48 48');
+  [['#EA4335','M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z'],
+   ['#4285F4','M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z'],
+   ['#FBBC05','M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z'],
+   ['#34A853','M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z']
+  ].forEach(function(p){var path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('fill',p[0]);path.setAttribute('d',p[1]);gsvg.appendChild(path);});
+  googleBtn.appendChild(gsvg);
+  googleBtn.appendChild(document.createTextNode(' Continue with Google'));
+  googleBtn.addEventListener('click',function(){googleBtn.textContent='Redirecting...';googleBtn.disabled=true;supa.signInWithGoogle();});
+  googleWrap.appendChild(googleBtn);
+  googleWrap.appendChild(el('div',{className:'auth-divider'},'or use email'));
+  screen.appendChild(googleWrap);
+  renderForm();
+  screen.appendChild(form);
+}
+
+async function bootApp(){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('main-app').style.display='flex';
+  await loadCloud();
+
+  // ── SUBSCRIPTION CHECK ──
+  // Get email from all possible sources
+  var userEmail=(S.user&&(S.user.email||S.user.user_email))||
+    (supa.tok&&JSON.parse(atob(supa.tok.split('.')[1])).email)||'';
+  if(!S.user)S.user={};
+  S.user.email=userEmail;
+  var isAdmin=userEmail.toLowerCase().trim()===ADMIN_EMAIL.toLowerCase().trim();
+
+  var sub=await supa.getSub();
+  var isNewSub=false;
+  if(!sub){
+    isNewSub=true;
+    await supa.createSub();
+    sub={status:'trial',trial_start:new Date().toISOString(),trial_end:new Date(Date.now()+TRIAL_DAYS*24*60*60*1000).toISOString(),paid_until:null};
+  }
+
+  var now=new Date();
+  var trialEnd=new Date(sub.trial_end);
+  var paidUntil=sub.paid_until?new Date(sub.paid_until):null;
+  var hasAccess=isAdmin||
+    (sub.status==='trial'&&now<trialEnd)||
+    (sub.status==='active'&&paidUntil&&now<paidUntil);
+  var daysLeft=null;
+  if(sub.status==='trial'&&now<trialEnd){
+    daysLeft=Math.ceil((trialEnd-now)/(1000*60*60*24));
+  } else if(sub.status==='active'&&paidUntil&&now<paidUntil){
+    daysLeft=Math.ceil((paidUntil-now)/(1000*60*60*24));
+  }
+  S.subscription={sub:sub,hasAccess:hasAccess,daysLeft:daysLeft,isAdmin:isAdmin,email:userEmail};
+
+  if(!hasAccess&&!isAdmin){showPaywall(sub);return;}
+
+    renderApp();
+}
+
+async function init(){
+  document.getElementById('auth-screen').style.display='flex';
+  renderAuth();
+  // Check if returning from Google OAuth (URL has #access_token)
+  var oauthDone=await supa.handleOAuthCallback();
+  if(oauthDone){await bootApp();return;}
+  // Check existing session
+  var session=await supa.getSession();
+  if(session){S.user=session.user||session;await bootApp();}
+}
+
+// MAIN APP
+var TABS=[
+  {id:'dashboard',icon:'\uD83C\uDFE0',label:'Dashboard'},
+  {id:'students',icon:'\uD83D\uDC69\u200D\uD83C\uDF93',label:'Students'},
+  {id:'sessions',icon:'\uD83D\uDCC6',label:'Sessions'},
+  {id:'schedule',icon:'\uD83D\uDDD3',label:'Schedule'},
+  {id:'billing',icon:'\uD83D\uDCB0',label:'Billing'},
+  {id:'rates',icon:'\uD83D\uDCE6',label:'Rates'},
+  {id:'tests',icon:'\uD83D\uDCDD',label:'Tests'},
+  {id:'policies',icon:'\uD83D\uDCCB',label:'Policies'},
+  {id:'materials',icon:'\uD83D\uDCDA',label:'Materials'},
+  {id:'whiteboard',icon:'\u270A',label:'Whiteboard'}
+];
+
+// ── PAYWALL ──
+function showPaywall(sub){
+  var app=document.getElementById('main-app');
+  app.innerHTML='';
+  app.style.flexDirection='column';
+  app.style.alignItems='center';
+  app.style.justifyContent='center';
+  app.style.background='linear-gradient(160deg,#1A2740 60%,#2C3E55 100%)';
+  app.style.padding='32px 24px';
+
+  var card=el('div',{style:{background:'#fff',borderRadius:24,padding:32,maxWidth:360,width:'100%',textAlign:'center',boxShadow:'0 16px 48px rgba(0,0,0,.3)'}});
+
+  var icon=el('div',{style:{fontSize:48,marginBottom:16}},'🔒');
+  var title=el('div',{style:{fontSize:22,fontWeight:900,color:'var(--navy)',marginBottom:8}},
+    sub.status==='revoked'?'Access Revoked':'Your Free Trial Has Ended');
+  var body_=el('div',{style:{fontSize:14,color:'var(--muted)',lineHeight:1.7,marginBottom:24}});
+
+  if(sub.status==='revoked'){
+    body_.textContent='Your access to TutOrg has been revoked. Please contact the admin to reinstate your account.';
+  } else {
+    var end=new Date(sub.trial_end);
+    body_.innerHTML='Your 30-day free trial ended on <strong>'+end.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})+'</strong>.<br><br>To continue using TutOrg, subscribe for <strong>₹750/month</strong>.';
+  }
+
+  var contactBox=el('div',{style:{background:'var(--accentL)',borderRadius:14,padding:18,marginBottom:20,textAlign:'left'}});
+  contactBox.appendChild(el('div',{style:{fontWeight:700,color:'var(--navy)',fontSize:13,marginBottom:8}},'To subscribe, contact:'));
+  contactBox.appendChild(el('div',{style:{fontSize:13,color:'var(--navy)',lineHeight:1.8}},
+    '📧 '+ADMIN_EMAIL+'\n💬 Send your payment via UPI and your email address. Access will be activated within 24 hours.'));
+
+  var copyBtn=el('button',{style:{width:'100%',padding:'13px',borderRadius:11,border:'none',
+    background:'linear-gradient(135deg,var(--accent),#C4623A)',color:'#fff',
+    fontSize:14,fontWeight:700,fontFamily:'inherit',cursor:'pointer',marginBottom:10}},
+    '📋 Copy Contact Details');
+  copyBtn.addEventListener('click',function(){
+    var msg='Hi, I\'d like to subscribe to TutOrg (₹750/month). My email: '+(S.user&&S.user.email||'')+'. Please activate my account after payment.';
+    if(navigator.clipboard)navigator.clipboard.writeText(msg);
+    copyBtn.textContent='✓ Copied!';setTimeout(function(){copyBtn.textContent='📋 Copy Contact Details';},2000);
+  });
+
+  var signoutBtn=el('button',{style:{width:'100%',padding:'11px',borderRadius:11,border:'1.5px solid var(--border)',
+    background:'#fff',color:'var(--muted)',fontSize:13,fontWeight:600,fontFamily:'inherit',cursor:'pointer'}},
+    'Sign out');
+  signoutBtn.addEventListener('click',function(){
+    supa.clear();location.reload();
+  });
+
+  card.appendChild(icon);card.appendChild(title);card.appendChild(body_);
+  card.appendChild(contactBox);card.appendChild(copyBtn);card.appendChild(signoutBtn);
+  app.appendChild(card);
+}
+
+// ── TRIAL BANNER (shown inside app when trial is active) ──
+function mkTrialBanner(){
+  var s=S.subscription;
+  if(!s||s.isAdmin||!s.sub)return null;
+  var days=s.daysLeft;
+  if(days===null||days>7)return null; // only show banner in last 7 days
+  var banner=el('div',{style:{
+    background:days<=3?'var(--accent)':'var(--gold)',
+    color:'#fff',fontSize:12,fontWeight:700,
+    padding:'6px 16px',textAlign:'center',flexShrink:0,
+    display:'flex',alignItems:'center',justifyContent:'center',gap:8
+  }});
+  banner.appendChild(el('span',{},days<=0?'⚠️ Trial expired — contact admin to subscribe':
+    '⏳ '+days+' day'+(days===1?'':'s')+' left in your free trial · Subscribe to continue'));
+  return banner;
+}
+
+// ── ADMIN PANEL ──
+async function showAdminPanel(){
+  var body_=el('div',{style:{display:'grid',gap:12,padding:'8px 0'}});
+  body_.appendChild(el('div',{style:{color:'var(--muted)',textAlign:'center',padding:20}},'Loading users...'));
+  showModal('\uD83D\uDC51 Admin Panel \u2014 All Users',body_);
+  var subs=await supa.getAllSubs();
+  body_.innerHTML='';
+
+  // Check if we got an error object back
+  if(subs&&subs.error){
+    var errBox=el('div',{style:{background:'var(--accentL)',borderRadius:12,padding:16,fontSize:13,lineHeight:1.8,color:'var(--navy)'}});
+    errBox.appendChild(el('div',{style:{fontWeight:700,marginBottom:8}},'⚠️ Supabase Error:'));
+    errBox.appendChild(el('div',{style:{fontFamily:'monospace',background:'rgba(0,0,0,.06)',padding:'8px 10px',borderRadius:8,fontSize:12,wordBreak:'break-all'}},subs.error));
+    errBox.appendChild(el('div',{style:{marginTop:12,fontSize:12,color:'var(--muted)'}},'Run the SQL below in Supabase SQL Editor → paste → click Run:'));
+    var sqlBox=el('pre',{style:{background:'var(--bg)',borderRadius:8,padding:12,fontSize:11,overflow:'auto',marginTop:8,border:'1px solid var(--border)',lineHeight:1.7,whiteSpace:'pre-wrap'}});
+    sqlBox.textContent='-- Run this in Supabase SQL Editor\ndrop policy if exists "admin read all" on subscriptions;\ndrop policy if exists "own sub read" on subscriptions;\ndrop policy if exists "admin update all" on subscriptions;\n\ncreate policy "read own or admin" on subscriptions\n  for select to authenticated using (\n    auth.uid() = user_id\n    OR\n    auth.email() = \''+ADMIN_EMAIL+'\'\n  );\n\ncreate policy "admin update" on subscriptions\n  for update to authenticated using (\n    auth.email() = \''+ADMIN_EMAIL+'\'\n  );';
+    var copyBtn=mkBtn('📋 Copy SQL','btn-primary','btn-sm',function(){
+      if(navigator.clipboard)navigator.clipboard.writeText(sqlBox.textContent);
+      showToast('Copied — paste into Supabase SQL Editor and click Run');
+    });
+    body_.appendChild(errBox);
+    body_.appendChild(sqlBox);
+    body_.appendChild(el('div',{style:{display:'flex',justifyContent:'flex-end',marginTop:8}},copyBtn));
+    return;
+  }
+
+  if(!subs||!subs.length){
+    var errBox=el('div',{style:{background:'var(--accentL)',borderRadius:12,padding:16,fontSize:13,lineHeight:1.7,color:'var(--navy)'}});
+    errBox.innerHTML='<strong>No users found.</strong><br>Run the SQL below in your Supabase SQL Editor to fix the RLS policy:';
+    var sqlBox=el('pre',{style:{background:'var(--bg)',borderRadius:8,padding:12,fontSize:11,overflow:'auto',marginTop:10,border:'1px solid var(--border)',lineHeight:1.6,whiteSpace:'pre-wrap'}});
+    sqlBox.textContent="drop policy if exists \"admin read all\" on subscriptions;\ndrop policy if exists \"admin update all\" on subscriptions;\ndrop policy if exists \"own sub read\" on subscriptions;\n\ncreate policy \"own sub read\" on subscriptions for select to authenticated\n  using (auth.uid() = user_id OR (select email from auth.users where id = auth.uid()) = '"+ADMIN_EMAIL+"');\n\ncreate policy \"admin update all\" on subscriptions for update to authenticated\n  using ((select email from auth.users where id = auth.uid()) = '"+ADMIN_EMAIL+"');";
+    var copyBtn=mkBtn('Copy SQL','btn-primary','btn-sm',function(){
+      if(navigator.clipboard)navigator.clipboard.writeText(sqlBox.textContent);
+      showToast('SQL copied \u2014 paste into Supabase SQL Editor and run it');
+    });
+    body_.appendChild(errBox);body_.appendChild(sqlBox);
+    body_.appendChild(el('div',{style:{display:'flex',justifyContent:'flex-end',marginTop:8}},copyBtn));
+    return;
+  }
+  body_.appendChild(el('div',{style:{fontSize:12,color:'var(--muted)',marginBottom:6}},subs.length+' user'+(subs.length===1?'':'s')+' registered'));
+  subs.forEach(function(sub){
+    var now=new Date();
+    var trialEnd=new Date(sub.trial_end);
+    var paidUntil=sub.paid_until?new Date(sub.paid_until):null;
+    var active=(sub.status==='trial'&&now<trialEnd)||(sub.status==='active'&&paidUntil&&now<paidUntil);
+    var statusColor=sub.status==='revoked'?'var(--accent)':active?'var(--green)':'var(--gold)';
+    var statusLabel=sub.status==='revoked'?'Revoked':active?'Active':'Expired';
+    var daysLeft=active?(paidUntil?Math.ceil((paidUntil-now)/(1000*60*60*24)):Math.ceil((trialEnd-now)/(1000*60*60*24))):0;
+    var card_=el('div',{style:{background:'var(--bg)',borderRadius:12,padding:'14px 16px',border:'1px solid var(--border)'}});
+    var row1=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:10,flexWrap:'wrap',gap:6}});
+    var left=el('div',{style:{flex:1,minWidth:0}});
+    left.appendChild(el('div',{style:{fontWeight:700,color:'var(--navy)',fontSize:14}},sub.email||'Unknown'));
+    left.appendChild(el('div',{style:{color:'var(--muted)',fontSize:11,marginTop:3}},
+      'Trial: '+new Date(sub.trial_start).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+
+      ' \u2192 '+trialEnd.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+
+      (paidUntil?' \u00B7 Paid until: '+paidUntil.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'')));
+    if(active)left.appendChild(el('div',{style:{fontSize:11,color:'var(--green)',fontWeight:600,marginTop:2}},daysLeft+' day'+(daysLeft===1?'':'s')+' remaining'));
+    var badge_=el('span',{style:{background:statusColor,color:'#fff',borderRadius:20,padding:'3px 12px',fontSize:11,fontWeight:700,whiteSpace:'nowrap',flexShrink:0}},statusLabel);
+    row1.appendChild(left);row1.appendChild(badge_);card_.appendChild(row1);
+    var btns_=el('div',{style:{display:'flex',gap:8,flexWrap:'wrap'}});
+    var extBtn=el('button',{className:'btn btn-green btn-sm'},'+30 Days');
+    extBtn.addEventListener('click',async function(){
+      extBtn.textContent='Extending...';extBtn.disabled=true;
+      var ok=await supa.extendSub(sub.user_id,sub.paid_until||null);
+      if(ok){showToast('\u2713 Extended 30 days for '+sub.email);closeModal();showAdminPanel();}
+      else{showToast('Error \u2014 update the SQL policy and try again');extBtn.textContent='+30 Days';extBtn.disabled=false;}
+    });
+    if(sub.email!==ADMIN_EMAIL){
+      var revokeBtn=el('button',{className:'btn btn-danger btn-sm'},sub.status==='revoked'?'Reinstate':'Revoke');
+      revokeBtn.addEventListener('click',async function(){
+        if(!confirm((sub.status==='revoked'?'Reinstate ':'Revoke access for ')+sub.email+'?'))return;
+        var ok=sub.status==='revoked'?await supa.extendSub(sub.user_id,null):await supa.revokeSub(sub.user_id);
+        if(ok){showToast('Done!');closeModal();showAdminPanel();}
+        else showToast('Error \u2014 check Supabase policies');
+      });
+      btns_.appendChild(revokeBtn);
+    }
+    btns_.appendChild(extBtn);
+    card_.appendChild(btns_);body_.appendChild(card_);
+  });
+}
+
+
+function renderApp(){
+  var app=document.getElementById('main-app');app.innerHTML='';
+  // Sidebar
+  var sb=el('div',{id:'sidebar'});
+  var sbh=el('div',{className:'sb-header'});
+  sbh.appendChild(el('div',{className:'sb-title'},'TutOrg'));
+  sbh.appendChild(el('div',{className:'sb-user'},S.user&&S.user.email||''));
+  sb.appendChild(sbh);
+  var nav=el('nav',{});
+  TABS.forEach(function(t){
+    var b=el('button',{className:'nav-btn'+(S.tab===t.id?' active':'')},el('span',{},t.icon),el('span',{className:'nav-label'},' '+t.label));
+    b.addEventListener('click',function(){S.tab=t.id;renderApp();});
+    nav.appendChild(b);
+  });
+  sb.appendChild(nav);
+  var sbf=el('div',{className:'sb-footer'});
+  var soBtn=el('button',{className:'sb-signout'});
+  soBtn.innerHTML='&#128682; <span>Sign Out</span>';
+  soBtn.addEventListener('click',function(){
+    supa.clear();S.user=null;S.students=[];S.sessions=[];S.schedule=[];S.materials=[];
+    document.getElementById('main-app').style.display='none';
+    document.getElementById('auth-screen').style.display='flex';
+    renderAuth();
+  });
+  if(S.subscription&&S.subscription.isAdmin){
+    var adminBtn=el('button',{className:'sb-signout',style:{background:'rgba(181,82,42,.3)',color:'#FFD7C4',marginBottom:6,fontWeight:800}});
+    adminBtn.innerHTML='&#128081; <span>Admin Panel</span>';
+    adminBtn.addEventListener('click',showAdminPanel);
+    sbf.appendChild(adminBtn);
+  }
+  // Theme toggle
+  var isDark=localStorage.getItem('tutorg-theme')!=='light';
+  var themeBtn=el('button',{className:'theme-toggle'});
+  var themeIcon=el('span',{},isDark?'🌙':'☀️');
+  var themeLabel=el('span',{},isDark?' Dark mode':' Light mode');
+  var track=el('div',{className:'toggle-track'});
+  track.appendChild(el('div',{className:'toggle-thumb'}));
+  themeBtn.appendChild(themeIcon);themeBtn.appendChild(themeLabel);themeBtn.appendChild(track);
+  themeBtn.addEventListener('click',function(){
+    var isNowLight=document.documentElement.getAttribute('data-theme')==='light';
+    if(isNowLight){
+      document.documentElement.removeAttribute('data-theme');
+      document.body.removeAttribute('data-theme');
+      localStorage.setItem('tutorg-theme','dark');
+      themeIcon.textContent='🌙';themeLabel.textContent=' Dark mode';
+    } else {
+      document.documentElement.setAttribute('data-theme','light');
+      document.body.setAttribute('data-theme','light');
+      localStorage.setItem('tutorg-theme','light');
+      themeIcon.textContent='☀️';themeLabel.textContent=' Light mode';
+    }
+  });
+  sbf.appendChild(themeBtn);
+  if(S.subscription&&!S.subscription.isAdmin&&S.subscription.daysLeft!==null&&S.subscription.daysLeft<=7){
+    var trialNote=el('div',{style:{fontSize:10,color:S.subscription.daysLeft<=3?'#F5B7B1':'var(--goldL)',padding:'6px 11px 4px',lineHeight:1.5}});
+    trialNote.textContent=S.subscription.daysLeft<=0?'Trial expired':'\u23F3 '+S.subscription.daysLeft+'d trial left';
+    sbf.appendChild(trialNote);
+  }
+  sbf.appendChild(soBtn);
+  sbf.appendChild(el('div',{className:'sb-count'},S.students.length+' students'));
+  sb.appendChild(sbf);
+  app.appendChild(sb);
+  // Content
+  var content=el('div',{id:'content'});
+  var banner=mkTrialBanner();
+  if(banner)content.appendChild(banner);
+  content.appendChild(el('div',{className:'sync-bar'},el('div',{className:'sync-dot'}),el('span',{className:'sync-txt'},'Ready')));
+  var pages={dashboard:pgDashboard,students:pgStudents,sessions:pgSessions,schedule:pgSchedule,billing:pgBilling,rates:pgRates,tests:pgTests,policies:pgPolicies,materials:pgMaterials,whiteboard:pgWhiteboard};
+  content.appendChild((pages[S.tab]||pgDashboard)());
+  app.appendChild(content);
+  setTimeout(function(){setSyncStatus(S.syncStatus);},0);
+}
+
+// DASHBOARD
+function pgDashboard(){
+  var m=NOW.getMonth(),y=NOW.getFullYear();
+  var moS=S.sessions.filter(function(s){var d=new Date(s.date);return d.getMonth()===m&&d.getFullYear()===y;});
+  var rev=S.students.reduce(function(sum,stu){var ss=moS.filter(function(s){return s.studentId===stu.id;});var r=getRate(S.rateTable,ss.length,stu.gradeNum,stu.isFamily,stu.familyRate);return sum+ss.reduce(function(t,s){return t+sessionCost(r,s.duration);},0);},0);
+  var todaySlots=S.schedule.filter(function(s){return s.day===NOW.getDay();});
+  var pg=el('div',{className:'page'});
+  var greeting=S.profile&&S.profile.name?'Welcome back, '+S.profile.name.split(' ')[0]+'!':'Welcome back!';
+  pg.appendChild(el('div',{style:{marginBottom:20}},
+    el('div',{style:{fontSize:11,color:'var(--muted)',fontWeight:700,textTransform:'uppercase',letterSpacing:'.1em'}},NOW.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})),
+    el('h2',{style:{fontSize:24,color:'var(--navy)',margin:'4px 0 0',fontWeight:900,letterSpacing:'-.02em'}},greeting)));
+  var sg=el('div',{className:'grid-stats'});
+  [{l:'Students',v:String(S.students.length),c:'var(--accent)'},{l:MONTHS[m]+' Sessions',v:String(moS.length),c:'var(--green)'},{l:MONTHS[m]+' Revenue',v:'₹'+rev.toLocaleString('en-IN'),c:'var(--gold)'},{l:'Family Clients',v:String(S.students.filter(function(s){return s.isFamily;}).length),c:'var(--navy)'}].forEach(function(s){
+    sg.appendChild(el('div',{className:'stat-card'},el('div',{className:'stat-val',style:{color:s.c}},s.v),el('div',{className:'stat-lbl'},s.l)));
+  });
+  pg.appendChild(sg);
+
+  // ── 1. TODAY'S SCHEDULE ──
+  var tc=mkCard();
+  var tcHead=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14}});
+  tcHead.appendChild(el('div',{style:{fontWeight:800,color:'var(--navy)',fontSize:15}},'🗓️ Today — '+DAYS[NOW.getDay()]));
+  tcHead.appendChild(bdg(todaySlots.length+' classes','var(--green)','var(--greenL)'));
+  tc.appendChild(tcHead);
+  if(!todaySlots.length){
+    tc.appendChild(el('div',{style:{color:'var(--muted)',fontSize:13,padding:'8px 0'}},'No classes scheduled today.'));
+  }
+  todaySlots.forEach(function(slot){
+    var stu=S.students.find(function(s){return s.id===slot.studentId;});
+    var attKey='att-'+NOW.toISOString().slice(0,10)+'-'+slot.id;
+    var att=S.payments[attKey]||'none';
+    var row=el('div',{style:{display:'flex',gap:12,padding:'10px 0',borderBottom:'1px solid var(--border)',fontSize:13,alignItems:'center'}});
+    row.appendChild(el('span',{style:{fontWeight:800,color:'var(--accent)',minWidth:50,fontSize:14}},slot.time));
+    row.appendChild(el('span',{style:{color:'var(--navy)',flex:1,fontWeight:600}},stu?stu.name:'?'));
+    if(slot.note)row.appendChild(el('span',{style:{color:'var(--muted)',fontSize:11}},slot.note));
+    var attBtn=el('button',{style:{
+      padding:'4px 12px',borderRadius:16,border:'none',cursor:'pointer',
+      fontSize:11,fontWeight:700,fontFamily:'inherit',whiteSpace:'nowrap',
+      background:att==='present'?'var(--greenL)':att==='absent'?'var(--accentL)':'var(--border)',
+      color:att==='present'?'var(--green)':att==='absent'?'var(--accent)':'var(--muted)'
+    }},att==='present'?'✓ Present':att==='absent'?'✗ Absent':'Mark');
+    (function(k,a_){attBtn.addEventListener('click',function(){
+      S.payments[k]=a_==='none'?'present':a_==='present'?'absent':'none';
+      scheduleSync();renderApp();
+    });})(attKey,att);
+    row.appendChild(attBtn);
+    tc.appendChild(row);
+  });
+  pg.appendChild(tc);
+
+  // ── 2. FEE STATUS ──
+  if(S.students.length){
+    var monthKey=y+'-'+(m+1);
+    var duesCard=mkCard();
+    var duesHead=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12,flexWrap:'wrap',gap:8}});
+    duesHead.appendChild(el('div',{style:{fontWeight:800,color:'var(--navy)',fontSize:15}},'💰 Fee Status — '+MONTHS[m]));
+    var paidCount=0,pendingCount=0,unpaidCount=0;
+    S.students.forEach(function(stu){
+      var ss=moS.filter(function(s){return s.studentId===stu.id;});
+      if(!ss.length&&!(stu.billingMode==='monthly'&&stu.monthlyRate))return;
+      var st=S.payments[monthKey+'-'+stu.id]||'unpaid';
+      if(st==='paid')paidCount++;else if(st==='pending')pendingCount++;else unpaidCount++;
+    });
+    var badgeRow=el('div',{style:{display:'flex',gap:6,flexWrap:'wrap'}});
+    if(paidCount)badgeRow.appendChild(bdg('✓ '+paidCount+' paid','var(--green)','var(--greenL)'));
+    if(pendingCount)badgeRow.appendChild(bdg('⏳ '+pendingCount+' pending','#856404','#FFF3CD'));
+    if(unpaidCount)badgeRow.appendChild(bdg('✗ '+unpaidCount+' unpaid','var(--accent)','var(--accentL)'));
+    duesHead.appendChild(badgeRow);
+    duesCard.appendChild(duesHead);
+    if(unpaidCount>0||pendingCount>0){
+      var lateStrip=el('div',{style:{background:'#FFF3CD',borderRadius:10,padding:'8px 14px',fontSize:12,color:'#856404',fontWeight:600,marginBottom:12}});
+      lateStrip.textContent='⚠️ '+(unpaidCount+pendingCount)+' parent'+(unpaidCount+pendingCount>1?'s':'')+' have not paid for '+MONTHS[m]+'.';
+      duesCard.appendChild(lateStrip);
+    }
+    duesCard.appendChild(el('div',{style:{height:1,background:'var(--border)',marginBottom:10}}));
+    S.students.forEach(function(stu){
+      var ss=moS.filter(function(s){return s.studentId===stu.id;});
+      var isFlat=stu.billingMode==='monthly'&&stu.monthlyRate;
+      if(!ss.length&&!isFlat)return;
+      var rate=getRate(S.rateTable,ss.length,stu.gradeNum,stu.isFamily,stu.familyRate);
+      var total=isFlat?Number(stu.monthlyRate):ss.reduce(function(t,s){return t+sessionCost(rate,s.duration);},0);
+      var key=monthKey+'-'+stu.id;
+      var status=S.payments[key]||'unpaid';
+      var row=el('div',{style:{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 0',borderBottom:'1px solid var(--border)',gap:8,flexWrap:'wrap'}});
+      var left=el('div',{style:{flex:1,minWidth:0}});
+      left.appendChild(el('div',{style:{fontWeight:700,color:'var(--navy)',fontSize:13}},stu.name));
+      left.appendChild(el('div',{style:{color:'var(--muted)',fontSize:11,marginTop:2}},(isFlat?'Flat monthly':'₹'+rate+'/hr · '+ss.length+' sessions')+' · Total: ₹'+total));
+      row.appendChild(left);
+      var statusBtn=el('button',{style:{
+        padding:'5px 14px',borderRadius:20,border:'none',cursor:'pointer',
+        fontWeight:700,fontSize:12,fontFamily:'inherit',whiteSpace:'nowrap',
+        background:status==='paid'?'var(--greenL)':status==='pending'?'#FFF3CD':'var(--accentL)',
+        color:status==='paid'?'var(--green)':status==='pending'?'#856404':'var(--accent)'
+      }},status==='paid'?'✓ Paid':status==='pending'?'⏳ Pending':'✗ Unpaid');
+      (function(k,s_){statusBtn.addEventListener('click',function(){
+        S.payments[k]=s_==='unpaid'?'pending':s_==='pending'?'paid':'unpaid';
+        scheduleSync();renderApp();
+      });})(key,status);
+      row.appendChild(statusBtn);
+      duesCard.appendChild(row);
+    });
+    pg.appendChild(duesCard);
+  }
+
+  // ── 3. MONTHLY PROGRESS ──
+  if(S.students.length){
+    var pc=mkCard();
+    pc.appendChild(el('div',{style:{fontWeight:800,color:'var(--navy)',marginBottom:16,fontSize:15}},'📊 Monthly Progress'));
+    S.students.slice(0,8).forEach(function(stu){
+      var count=moS.filter(function(s){return s.studentId===stu.id;}).length;
+      var base=stu.billingMode==='monthly'?count:stu.basePackage;
+      var pct=base>0?Math.min(100,Math.round(count/base*100)):0;
+      var row=el('div',{className:'prog-row'});
+      row.appendChild(el('div',{className:'prog-labels'},
+        el('span',{style:{color:'var(--navy)',fontWeight:700}},stu.name),
+        el('span',{style:{color:'var(--muted)',fontSize:12}},count+(stu.billingMode==='monthly'?' sessions':'/'+base))));
+      var tr=el('div',{className:'prog-track'});
+      tr.appendChild(el('div',{className:'prog-fill',style:{width:pct+'%',background:count>base?'var(--gold)':'var(--accent)'}}));
+      row.appendChild(tr);pc.appendChild(row);
+    });
+    pg.appendChild(pc);
+  }
+  return pg;
+}
+
+// STUDENTS
+function pgStudents(){
+  var pg=el('div',{className:'page'});
+  var top=el('div',{className:'page-top'});
+  top.appendChild(el('h2',{className:'page-title'},'Students'));
+  top.appendChild(mkBtn('+ Add Student','btn-primary','btn-sm',function(){openStudentModal();}));
+  pg.appendChild(top);
+  if(!S.students.length){pg.appendChild(el('div',{style:{color:'var(--muted)',textAlign:'center',padding:50}},'No students yet. Tap + Add Student.'));return pg;}
+  S.students.forEach(function(s,i){
+    var rate=getRate(S.rateTable,s.basePackage,s.gradeNum,s.isFamily,s.familyRate);
+    var c=mkCard();
+    var t=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}});
+    t.appendChild(el('div',{},el('div',{style:{fontWeight:800,fontSize:15,color:'var(--navy)'}},s.name),el('div',{style:{color:'var(--muted)',fontSize:12,marginTop:2}},'Grade '+s.gradeNum+(s.subject?' - '+s.subject:''))));
+    var bd=el('div',{style:{display:'flex',flexDirection:'column',gap:4,alignItems:'flex-end'}});
+    if(s.isFamily)bd.appendChild(bdg('Family','var(--gold)','var(--goldL)'));
+    bd.appendChild(bdg(s.basePackage+' cls/mo'));
+    t.appendChild(bd);c.appendChild(t);
+    c.appendChild(el('div',{style:{marginTop:10,borderTop:'1px solid var(--border)',paddingTop:8,fontSize:12,color:'var(--muted)',lineHeight:1.8}},
+      s.parentName+' - '+s.parentPhone+(s.parentEmail?' - '+s.parentEmail:''),
+      el('div',{style:{fontWeight:700,color:'var(--accent)',marginTop:3,fontSize:13}},'Rs.'+rate+'/class - Rs.'+(rate*s.basePackage)+'/mo')));
+    var br=el('div',{style:{display:'flex',gap:10,marginTop:16,flexWrap:'wrap',alignItems:'center'}});
+    (function(idx){
+      br.appendChild(mkBtn('Edit','btn-ghost','btn-sm',function(){openStudentModal(idx);}));
+      br.appendChild(mkBtn('Remove','btn-danger','btn-sm',function(){mutate('students',function(arr){arr.splice(idx,1);});}));
+    })(i);
+    c.appendChild(br);pg.appendChild(c);
+  });
+  return pg;
+}
+
+function openStudentModal(editIdx){
+  var isEdit=editIdx!=null;
+  var src=isEdit?S.students[editIdx]:{};
+  var form={name:src.name||'',gradeNum:src.gradeNum||'',subject:src.subject||'',parentName:src.parentName||'',parentPhone:src.parentPhone||'',parentEmail:src.parentEmail||'',basePackage:src.basePackage||8,isFamily:src.isFamily||false,familyRate:src.familyRate||'',billingMode:src.billingMode||'per-session',monthlyRate:src.monthlyRate||''};
+  var nameI=mkInp('text',form.name,function(v){form.name=v;},'Full name');
+  var gradeI=mkInp('number',form.gradeNum,function(v){form.gradeNum=v;updateHint();},'1-12',{min:1,max:12});
+  var subjI=mkInp('text',form.subject,function(v){form.subject=v;},'e.g. Maths');
+  var parNI=mkInp('text',form.parentName,function(v){form.parentName=v;},'Parent name');
+  var parPI=mkInp('tel',form.parentPhone,function(v){form.parentPhone=v;},'Phone number');
+  var parEI=mkInp('email',form.parentEmail,function(v){form.parentEmail=v;},'Email');
+  var pkgS=mkSel(form.basePackage,[[8,'8 classes/mo'],[12,'12 classes/mo'],[16,'16 classes/mo'],[20,'20 classes/mo']],function(v){form.basePackage=Number(v);updateHint();});
+  var hint=el('div',{className:'info-box',style:{background:'var(--accentL)',color:'var(--accent)',fontWeight:600}});
+  function updateHint(){
+    if(form.billingMode==='monthly'){
+      hint.textContent='Fixed monthly charge: Rs.'+(form.monthlyRate||'?')+' regardless of number of sessions.';
+    } else {
+      var gk=gradeKey(form.gradeNum||'5',S.rateTable);var rates=S.rateTable.rates||S.rateTable;var r=(rates[form.basePackage]&&rates[form.basePackage][gk])||'?';
+      hint.textContent='Grade '+form.gradeNum+' → Rs.'+r+'/hr for '+form.basePackage+' sessions/month';
+    }
+  }
+
+  // Billing mode toggle
+  var modeRow=el('div',{style:{display:'flex',gap:0,borderRadius:10,overflow:'hidden',border:'1.5px solid var(--border)',width:'fit-content'}});
+  ['per-session','monthly'].forEach(function(mode){
+    var lbl=mode==='per-session'?'Per Session':'Flat Monthly';
+    var btn=el('button',{style:{
+      padding:'8px 16px',border:'none',cursor:'pointer',fontWeight:700,fontSize:12,fontFamily:'inherit',
+      background:form.billingMode===mode?'var(--navy)':'#fff',
+      color:form.billingMode===mode?'#fff':'var(--muted)',transition:'all .2s'
+    }},lbl);
+    btn.addEventListener('click',function(){
+      form.billingMode=mode;
+      modeRow.querySelectorAll('button').forEach(function(b,i){
+        var m_=['per-session','monthly'][i];
+        b.style.background=form.billingMode===m_?'var(--navy)':'#fff';
+        b.style.color=form.billingMode===m_?'#fff':'var(--muted)';
+      });
+      monthlyRateRow.style.display=mode==='monthly'?'flex':'none';
+      pkgRow.style.display=mode==='per-session'?'flex':'none';
+      updateHint();
+    });
+    modeRow.appendChild(btn);
+  });
+
+  var monthlyRateI=mkInp('number',form.monthlyRate,function(v){form.monthlyRate=v;updateHint();},'e.g. 5000');
+  var monthlyRateRow=el('div',{className:'field',style:{display:form.billingMode==='monthly'?'flex':'none'}},el('label',{},'Monthly Flat Rate (Rs.)'),monthlyRateI);
+  var pkgRow=el('div',{className:'field',style:{display:form.billingMode==='per-session'?'flex':'none'}},el('label',{},'Base Package'),pkgS);
+
+  updateHint();
+  var famChk=el('input',{type:'checkbox'});famChk.checked=!!form.isFamily;
+  var famRateI=mkInp('number',form.familyRate,function(v){form.familyRate=v;},'Rate per session');
+  var famRow=el('div',{className:'field',style:{display:form.isFamily?'flex':'none'}},el('label',{},'Special Rate/Session (Rs.)'),famRateI);
+  famChk.addEventListener('change',function(){form.isFamily=famChk.checked;famRow.style.display=famChk.checked?'flex':'none';});
+  var body=el('div',{style:{display:'grid',gap:14}});
+  body.appendChild(el('div',{className:'grid-2'},fld('Student Name',nameI),fld('Grade (1-12)',gradeI)));
+  body.appendChild(fld('Subject',subjI));
+  body.appendChild(el('div',{className:'grid-2'},fld('Parent Name',parNI),fld('Parent Phone',parPI)));
+  body.appendChild(fld('Parent Email',parEI));
+  body.appendChild(fld('Billing Mode',modeRow));
+  body.appendChild(pkgRow);
+  body.appendChild(monthlyRateRow);
+  body.appendChild(hint);
+  body.appendChild(el('div',{style:{display:'flex',alignItems:'center',gap:10}},famChk,el('label',{style:{fontSize:13}},'Family / special-rate client')));
+  body.appendChild(famRow);
+  var btns=el('div',{style:{display:'flex',gap:10,justifyContent:'flex-end'}});
+  btns.appendChild(mkBtn('Cancel','btn-ghost','btn-sm',closeModal));
+  btns.appendChild(mkBtn(isEdit?'Save Changes':'Add Student','btn-primary','btn-sm',function(){
+    if(!form.name.trim())return;
+    form.gradeKey=gradeKey(form.gradeNum,S.rateTable);
+    mutate('students',function(arr){
+      if(isEdit){arr[editIdx]=Object.assign({},arr[editIdx],form);}
+      else{arr.push(Object.assign({},form,{id:genId()}));}
+    });
+    closeModal();
+  }));
+  body.appendChild(btns);
+  showModal(isEdit?'Edit Student':'Add Student',body);
+}
+
+// SESSIONS
+function pgSessions(){
+  var fm=NOW.getMonth(),fy=NOW.getFullYear();
+  var pg=el('div',{className:'page'});
+  function render_(){
+    pg.innerHTML='';
+    var top=el('div',{className:'page-top'});
+    top.appendChild(el('h2',{className:'page-title'},'Sessions'));
+    var ctrl=el('div',{style:{display:'flex',gap:6,alignItems:'center',flexWrap:'wrap'}});
+    ctrl.appendChild(mkSel(fm,MONTHS.map(function(m,i){return[i,m];}),function(v){fm=Number(v);render_();}));
+    var yI=mkInp('number',fy,function(v){fy=Number(v);render_();},'');yI.style.width='72px';
+    ctrl.appendChild(yI);
+    ctrl.appendChild(mkBtn('+ Log','btn-primary','btn-sm',function(){openSessionModal();}));
+    top.appendChild(ctrl);pg.appendChild(top);
+    var filtered=S.sessions.filter(function(s){var d=new Date(s.date);return d.getMonth()===fm&&d.getFullYear()===fy;});
+    var byS={};filtered.forEach(function(s){if(!byS[s.studentId])byS[s.studentId]=[];byS[s.studentId].push(s);});
+    if(!Object.keys(byS).length){pg.appendChild(el('div',{style:{color:'var(--muted)',textAlign:'center',padding:40}},'No sessions for '+MONTHS[fm]+' '+fy));return;}
+    Object.keys(byS).forEach(function(sid){
+      var ss=byS[sid];
+      var stu=S.students.find(function(s){return s.id===sid;});if(!stu)return;
+      var count=ss.length,rate=getRate(S.rateTable,count,stu.gradeNum,stu.isFamily,stu.familyRate);
+      var totalCost=ss.reduce(function(sum,s){return sum+sessionCost(rate,s.duration);},0);
+      var c=mkCard();
+      var t=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:6}});
+      t.appendChild(el('div',{},el('span',{style:{fontWeight:800,fontSize:15,color:'var(--navy)'}},stu.name),el('span',{style:{color:'var(--muted)',fontSize:12,marginLeft:8}},'Gr.'+stu.gradeNum)));
+      var info=el('div',{style:{display:'flex',gap:7,alignItems:'center',flexWrap:'wrap'}});
+      info.appendChild(bdg(count+' sessions'));
+      info.appendChild(bdg('Rs.'+rate+'/hr','var(--green)','var(--greenL)'));
+      info.appendChild(el('span',{style:{fontWeight:900,color:'var(--accent)',fontSize:13,whiteSpace:'nowrap',flexShrink:0}},'Rs.'+totalCost));
+      t.appendChild(info);c.appendChild(t);
+      if(count>stu.basePackage){c.appendChild(el('div',{style:{marginTop:5,padding:'4px 10px',background:'var(--goldL)',borderRadius:7,fontSize:11,color:'var(--gold)',fontWeight:700}},'Extra '+(count-stu.basePackage)+' session(s) - rate upgraded to Rs.'+rate+'/class'));}
+      ss.sort(function(a,b){return new Date(a.date)-new Date(b.date);}).forEach(function(s){
+        var row=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'5px 8px',background:'var(--bg)',borderRadius:7,fontSize:12,marginTop:5}});
+        row.appendChild(el('span',{style:{color:'var(--muted)',minWidth:76,flexShrink:0}},new Date(s.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'})));
+        row.appendChild(el('span',{style:{color:'var(--border)',margin:'0 6px',flexShrink:0}},'·'));
+        row.appendChild(el('span',{style:{flex:1,color:'var(--navy)'}},s.topic||'—'));
+        row.appendChild(el('span',{style:{color:'var(--muted)'}},s.duration+'min'));
+        row.appendChild(el('span',{style:{color:'var(--green)',fontWeight:600,marginLeft:4}},'Rs.'+sessionCost(rate,s.duration)));
+        if(s.extra)row.appendChild(bdg('Extra','var(--gold)','var(--goldL)'));
+        var db=el('button',{style:{border:'none',background:'none',cursor:'pointer',color:'#C0392B',marginLeft:6,fontSize:16}},'x');
+        (function(sid_){db.addEventListener('click',function(){mutate('sessions',function(arr){var idx=arr.findIndex(function(x){return x.id===sid_;});if(idx>-1)arr.splice(idx,1);});render_();});})(s.id);
+        row.appendChild(db);c.appendChild(row);
+      });
+      pg.appendChild(c);
+    });
+  }
+  render_();return pg;
+}
+
+function openSessionModal(){
+  var form={studentId:'',date:NOW.toISOString().slice(0,10),topic:'',duration:60,extra:false};
+  var stuS=mkSel(form.studentId,[['','Select student...']].concat(S.students.map(function(s){return[s.id,s.name+' (Gr.'+s.gradeNum+')']})),function(v){form.studentId=v;});
+  var dateI=mkInp('date',form.date,function(v){form.date=v;});
+  var topicI=mkInp('text',form.topic,function(v){form.topic=v;},'Topic covered');
+  var durInp=el('input',{type:'number',min:'1',step:'1',value:String(form.duration),style:{width:'100%',padding:'8px 10px',border:'1.5px solid var(--border)',borderRadius:'9px',fontSize:'14px',fontFamily:'inherit',color:'var(--navy)',background:'#fff'}});durInp.addEventListener('input',function(){form.duration=Math.max(1,parseInt(durInp.value)||60);});var durS=durInp;
+  var extChk=el('input',{type:'checkbox'});extChk.addEventListener('change',function(){form.extra=extChk.checked;});
+  var body=el('div',{style:{display:'grid',gap:14}});
+  body.appendChild(fld('Student',stuS));
+  body.appendChild(fld('Date',dateI));
+  body.appendChild(fld('Topic / Notes',topicI));
+  body.appendChild(fld('Duration',durS));
+  body.appendChild(el('div',{style:{display:'flex',alignItems:'center',gap:10}},extChk,el('label',{style:{fontSize:13}},'Extra / exam-season class')));
+  var btns=el('div',{style:{display:'flex',gap:10,justifyContent:'flex-end'}});
+  btns.appendChild(mkBtn('Cancel','btn-ghost','btn-sm',closeModal));
+  btns.appendChild(mkBtn('Log Session','btn-primary','btn-sm',function(){
+    if(!form.studentId)return;
+    mutate('sessions',function(arr){arr.push(Object.assign({},form,{id:genId()}));});
+    closeModal();
+  }));
+  body.appendChild(btns);
+  showModal('Log Session',body);
+}
+
+// SCHEDULE
+function pgSchedule(){
+  var pg=el('div',{className:'page'});
+  var top=el('div',{className:'page-top'});
+  top.appendChild(el('h2',{className:'page-title'},'Weekly Schedule'));
+  top.appendChild(mkBtn('+ Add Slot','btn-primary','btn-sm',function(){openScheduleModal();}));
+  pg.appendChild(top);
+  DAYS.forEach(function(day,di){
+    var slots=S.schedule.filter(function(s){return s.day===di;}).sort(function(a,b){return a.time.localeCompare(b.time);});
+    var dc=mkCard(el('div',{className:'day-hdr'},day));
+    if(!slots.length)dc.appendChild(el('div',{style:{color:'var(--muted)',fontSize:12}},'Free'));
+    slots.forEach(function(slot){
+      var stu=S.students.find(function(s){return s.id===slot.studentId;});
+      var pill=el('div',{className:'slot-pill'});
+      var pr=el('div',{style:{display:'flex',justifyContent:'space-between'}});
+      pr.appendChild(el('strong',{style:{color:'var(--navy)'}},slot.time));
+      var db=el('button',{style:{border:'none',background:'none',cursor:'pointer',color:'var(--muted)',fontSize:14}},'x');
+      (function(sid_){db.addEventListener('click',function(){mutate('schedule',function(arr){var i=arr.findIndex(function(x){return x.id===sid_;});if(i>-1)arr.splice(i,1);});});})(slot.id);
+      pr.appendChild(db);pill.appendChild(pr);
+      pill.appendChild(el('div',{style:{color:'var(--navy)',fontWeight:600}},stu?stu.name:'?'));
+      if(slot.note)pill.appendChild(el('div',{style:{color:'var(--muted)',fontSize:11}},slot.note));
+      if(!slot.recurring)pill.appendChild(bdg('One-time','var(--gold)','var(--goldL)'));
+      dc.appendChild(pill);
+    });
+    pg.appendChild(dc);
+  });
+  return pg;
+}
+
+function openScheduleModal(){
+  var form={studentId:'',time:'10:00',note:'',recurring:true};
+  var selectedDays=[];
+  var allDaysMode=true;
+
+  var stuS=mkSel(form.studentId,[['','Select student...']].concat(S.students.map(function(s){return[s.id,s.name];})),function(v){form.studentId=v;});
+  var timeI=mkInp('time',form.time,function(v){form.time=v;});
+  var noteI=mkInp('text',form.note,function(v){form.note=v;},'e.g. Exam season extra');
+
+  // Mode toggle: All days OR Select days
+  var modeRow=el('div',{style:{display:'flex',gap:0,borderRadius:10,overflow:'hidden',border:'1.5px solid var(--border)',width:'fit-content',marginBottom:10}});
+  ['Every Day','Select Days'].forEach(function(lbl,idx){
+    var btn=el('button',{style:{
+      padding:'8px 18px',border:'none',cursor:'pointer',fontWeight:700,
+      fontSize:12,fontFamily:'inherit',transition:'all .2s',
+      background:idx===0?'var(--navy)':'#fff',
+      color:idx===0?'#fff':'var(--muted)'
+    }},lbl);
+    btn.addEventListener('click',function(){
+      allDaysMode=idx===0;
+      modeRow.querySelectorAll('button').forEach(function(b,i){
+        b.style.background=i===idx?'var(--navy)':'#fff';
+        b.style.color=i===idx?'#fff':'var(--muted)';
+      });
+      dayGrid.style.display=allDaysMode?'none':'grid';
+    });
+    modeRow.appendChild(btn);
+  });
+
+  // Day selector grid
+  var dayGrid=el('div',{style:{display:'none',gridTemplateColumns:'repeat(4,1fr)',gap:6,marginTop:4}});
+  DAYS.forEach(function(dayName,dayIdx){
+    if(dayIdx===0)return; // skip Sunday index 0, show at end
+    var chip=el('button',{style:{
+      padding:'7px 4px',borderRadius:9,border:'1.5px solid var(--border)',
+      fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:'inherit',
+      background:'#fff',color:'var(--muted)',transition:'all .15s'
+    }},dayName.slice(0,3));
+    chip.addEventListener('click',function(){
+      var i=selectedDays.indexOf(dayIdx);
+      if(i>=0){selectedDays.splice(i,1);chip.style.background='#fff';chip.style.color='var(--muted)';chip.style.borderColor='var(--border)';}
+      else{selectedDays.push(dayIdx);chip.style.background='var(--accent)';chip.style.color='#fff';chip.style.borderColor='var(--accent)';}
+    });
+    dayGrid.appendChild(chip);
+  });
+  // Sunday last
+  var sunChip=el('button',{style:{padding:'7px 4px',borderRadius:9,border:'1.5px solid var(--border)',fontSize:12,fontWeight:600,cursor:'pointer',fontFamily:'inherit',background:'#fff',color:'var(--muted)'}},DAYS[0].slice(0,3));
+  sunChip.addEventListener('click',function(){
+    var i=selectedDays.indexOf(0);
+    if(i>=0){selectedDays.splice(i,1);sunChip.style.background='#fff';sunChip.style.color='var(--muted)';}
+    else{selectedDays.push(0);sunChip.style.background='var(--accent)';sunChip.style.color='#fff';}
+  });
+  dayGrid.appendChild(sunChip);
+
+  var recChk=el('input',{type:'checkbox'});recChk.checked=true;
+  recChk.addEventListener('change',function(){form.recurring=recChk.checked;});
+
+  var body=el('div',{style:{display:'grid',gap:16}});
+  body.appendChild(fld('Student',stuS));
+  body.appendChild(fld('Frequency',modeRow));
+  body.appendChild(dayGrid);
+  body.appendChild(fld('Time',timeI));
+  body.appendChild(fld('Note (optional)',noteI));
+  body.appendChild(el('div',{style:{display:'flex',alignItems:'center',gap:10}},recChk,el('label',{style:{fontSize:13}},'Recurring weekly')));
+  var btns=el('div',{style:{display:'flex',gap:10,justifyContent:'flex-end'}});
+  btns.appendChild(mkBtn('Cancel','btn-ghost','btn-sm',closeModal));
+  btns.appendChild(mkBtn('Add Slot','btn-primary','btn-sm',function(){
+    if(!form.studentId){showToast('Please select a student');return;}
+    // If allDaysMode, add one slot per day of week (Mon–Fri by default, or all 7)
+    var daysToAdd=allDaysMode?[1,2,3,4,5,6,0]:selectedDays;
+    if(!allDaysMode&&!daysToAdd.length){showToast('Please select at least one day');return;}
+    mutate('schedule',function(arr){
+      daysToAdd.forEach(function(d){
+        arr.push({id:genId(),studentId:form.studentId,day:d,time:form.time,note:form.note,recurring:form.recurring});
+      });
+    });
+    closeModal();
+  }));
+  body.appendChild(btns);
+  showModal('Add Schedule Slot',body);
+}
+
+// BILLING
+function pgBilling(){
+  var month=NOW.getMonth(),year=NOW.getFullYear();
+  var pg=el('div',{className:'page'});
+  function render_(){
+    pg.innerHTML='';
+    var top=el('div',{className:'page-top'});
+    top.appendChild(el('h2',{className:'page-title'},'Billing'));
+    var ctrl=el('div',{style:{display:'flex',gap:6,alignItems:'center'}});
+    ctrl.appendChild(mkSel(month,MONTHS.map(function(m,i){return[i,m];}),function(v){month=Number(v);render_();}));
+    var yI=mkInp('number',year,function(v){year=Number(v);render_();},'');yI.style.width='72px';
+    ctrl.appendChild(yI);top.appendChild(ctrl);pg.appendChild(top);
+    var ML=MONTHS[month]+' '+year;
+    var bills=S.students.map(function(stu){
+      var ss=S.sessions.filter(function(s){var d=new Date(s.date);return s.studentId===stu.id&&d.getMonth()===month&&d.getFullYear()===year;});
+      var count=ss.length,rate=getRate(S.rateTable,count,stu.gradeNum,stu.isFamily,stu.familyRate);
+      var isMonthly=stu.billingMode==='monthly'&&stu.monthlyRate;
+      var total=isMonthly?Number(stu.monthlyRate):ss.reduce(function(sum,s){return sum+sessionCost(rate,s.duration);},0);
+      var rateLabel=isMonthly?'Flat Monthly':'Rs.'+rate+'/hr';
+      return{stu:stu,count:count,rate:rate,total:total,ss:ss,isMonthly:!!(stu.billingMode==='monthly'&&stu.monthlyRate)};
+    }).filter(function(b){return b.count>0||(b.stu.billingMode==='monthly'&&b.stu.monthlyRate);});
+    if(!bills.length){pg.appendChild(el('div',{style:{color:'var(--muted)',textAlign:'center',padding:40}},'No sessions for '+ML));return;}
+    bills.forEach(function(b){
+      var sessionLines=b.isMonthly?'Billing mode: Flat monthly rate':b.ss.map(function(s){return new Date(s.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'})+' ('+s.duration+'min) - Rs.'+sessionCost(b.rate,s.duration);}).join('\n');
+      var rateNote=b.isMonthly?'Flat monthly rate: Rs.'+b.total:'Rate: Rs.'+b.rate+'/hr';
+      var msgText='Dear '+b.stu.parentName+',\n\nHope you are well! Here is the fee summary for '+b.stu.name+' for '+ML+':\n\nGrade: '+b.stu.gradeNum+'  |  Subject: '+(b.stu.subject||'-')+'\nSessions completed: '+b.count+'\n'+rateNote+'\n\n'+sessionLines+'\n\nTotal payable: Rs.'+b.total+'\n\n'+((!b.isMonthly&&b.count>b.stu.basePackage)?'Note: '+(b.count-b.stu.basePackage)+' extra session(s) beyond base package.\n\n':'')+buildPolicyText()+'\n\nThank you!';
+      var c=mkCard();
+      var t=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}});
+      t.appendChild(el('div',{},el('div',{style:{fontWeight:800,fontSize:15,color:'var(--navy)'}},b.stu.name),el('div',{style:{color:'var(--muted)',fontSize:12}},'Gr.'+b.stu.gradeNum+' - '+b.stu.subject+' - '+b.stu.parentName)));
+      var ri=el('div',{style:{display:'flex',gap:7,alignItems:'center',flexWrap:'wrap'}});
+      ri.appendChild(bdg(b.count+' sessions'));
+      ri.appendChild(bdg(b.isMonthly?'Flat Monthly':'Rs.'+b.rate+'/hr','var(--green)','var(--greenL)'));
+      if(b.stu.isFamily)ri.appendChild(bdg('Family','var(--gold)','var(--goldL)'));
+      if(b.isMonthly)ri.appendChild(bdg('Monthly','#6C3483','#F5EEF8'));
+      ri.appendChild(el('span',{style:{fontWeight:900,fontSize:16,color:'var(--accent)'}},'Rs.'+b.total));
+      t.appendChild(ri);c.appendChild(t);
+      if(!b.isMonthly&&b.count>b.stu.basePackage){c.appendChild(el('div',{style:{marginTop:5,padding:'4px 10px',background:'var(--goldL)',borderRadius:7,fontSize:11,color:'var(--gold)',fontWeight:700}},'Rate upgraded - '+(b.count-b.stu.basePackage)+' extra session(s)'));}
+      var br=el('div',{style:{display:'flex',gap:10,marginTop:16,flexWrap:'wrap',alignItems:'center'}});
+      (function(msg_){
+        br.appendChild(mkBtn('Preview','btn-ghost','btn-sm',function(){
+          var previewBody=el('div',{style:{display:'grid',gap:14}});
+          previewBody.appendChild(el('pre',{className:'msg-pre'},msg_));
+          var copyBtn=mkBtn('Copy and Close','btn-green','btn-sm',function(){if(navigator.clipboard)navigator.clipboard.writeText(msg_);closeModal();});
+          previewBody.appendChild(el('div',{style:{display:'flex',justifyContent:'flex-end'}},copyBtn));
+          showModal('Message for '+b.stu.parentName,previewBody);
+        }));
+        br.appendChild(mkBtn('Copy Message','btn-green','btn-sm',function(){if(navigator.clipboard)navigator.clipboard.writeText(msg_);}));
+        var reminderMsg='Dear '+b.stu.parentName+', this is a gentle reminder that payment of Rs.'+b.total+' for '+b.stu.name+'\'s tuition for '+ML+' is overdue. Our payment window is '+(S.policies&&S.policies.paymentDays||3)+' days from the invoice date. Kindly make the payment at the earliest to avoid disruption in sessions. Thank you!';
+        br.appendChild(mkBtn('⏰ Reminder','btn-ghost','btn-sm',function(){if(navigator.clipboard)navigator.clipboard.writeText(reminderMsg);showToast('Reminder message copied!');}));
+      })(msgText);
+      c.appendChild(br);pg.appendChild(c);
+    });
+    var total=bills.reduce(function(s,b){return s+b.total;},0);
+    pg.appendChild(el('div',{style:{background:'var(--accentL)',borderRadius:12,padding:'14px 18px',fontWeight:800,color:'var(--navy)',fontSize:14}},'Total Revenue - '+ML+': ',el('span',{style:{color:'var(--accent)',fontSize:18}},'Rs.'+total.toLocaleString('en-IN'))));
+  }
+  render_();return pg;
+}
+
+// RATES
+// ── TESTS & MARKS ──
+function pgTests(){
+  var pg=el('div',{className:'page'});
+  var top=el('div',{className:'page-top'});
+  top.appendChild(el('h2',{className:'page-title'},'📝 Tests & Marks'));
+  top.appendChild(mkBtn('+ New Test','btn-primary','btn-sm',function(){openTestModal();}));
+  pg.appendChild(top);
+
+  if(!S.tests||!S.tests.length){
+    pg.appendChild(mkCard(el('div',{style:{color:'var(--muted)',textAlign:'center',padding:32,fontSize:14}},'No tests yet. Tap "+ New Test" to create one.')));
+    return pg;
+  }
+
+  // Sort tests by date descending
+  var sorted=[].concat(S.tests).sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+
+  sorted.forEach(function(test,ti){
+    var realIdx=S.tests.indexOf(test);
+    var c=mkCard();
+    // Header
+    var hd=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:12,flexWrap:'wrap',gap:8}});
+    var hl=el('div');
+    hl.appendChild(el('div',{style:{fontWeight:800,fontSize:16,color:'var(--navy)'}},test.title));
+    hl.appendChild(el('div',{style:{color:'var(--muted)',fontSize:12}},new Date(test.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+(test.subject?' · '+test.subject:'')));
+    hd.appendChild(hl);
+    var hr=el('div',{style:{display:'flex',gap:6}});
+    hr.appendChild(bdg('Max: '+test.maxMarks));
+    hr.appendChild(bdg('Min Pass: '+test.minMarks,'var(--green)','var(--greenL)'));
+    var avg=test.results&&test.results.length?Math.round(test.results.reduce(function(s,r){return s+(Number(r.marks)||0);},0)/test.results.filter(function(r){return r.marks!=='';}).length):null;
+    if(avg!=null)hr.appendChild(bdg('Avg: '+avg,'var(--gold)','var(--goldL)'));
+    hd.appendChild(hr);
+    c.appendChild(hd);
+
+    // Editable student list — tap × to remove a student from this test
+    var stuChips=el('div',{style:{display:'flex',flexWrap:'wrap',gap:5,marginBottom:12}});
+    var activeIds=(test.studentIds?test.studentIds.slice():S.students.map(function(s){return s.id;}));
+    function rebuildChips(){
+      stuChips.innerHTML='';
+      activeIds.forEach(function(sid){
+        var stu=S.students.find(function(s){return s.id===sid;});
+        if(!stu)return;
+        var chip=el('div',{style:{display:'flex',alignItems:'center',gap:4,background:'var(--accentL)',borderRadius:20,padding:'3px 10px 3px 12px',fontSize:12,fontWeight:600,color:'var(--accent)'}});
+        chip.appendChild(document.createTextNode(stu.name));
+        var x=el('button',{style:{background:'none',border:'none',cursor:'pointer',color:'var(--accent)',fontWeight:900,fontSize:14,lineHeight:1,padding:'0 0 0 2px'}},'×');
+        (function(id){x.addEventListener('click',function(){
+          activeIds=activeIds.filter(function(i){return i!==id;});
+          S.tests[realIdx]=Object.assign({},S.tests[realIdx],{studentIds:activeIds.slice()});
+          scheduleSync();rebuildChips();rebuildGrid();
+        });})(sid);
+        chip.appendChild(x);stuChips.appendChild(chip);
+      });
+      // Add student button
+      var remaining=S.students.filter(function(s){return activeIds.indexOf(s.id)===-1;});
+      if(remaining.length){
+        var addSel=el('select',{style:{border:'1.5px dashed var(--border)',borderRadius:20,padding:'3px 10px',fontSize:12,fontFamily:'inherit',background:'#fff',color:'var(--muted)',cursor:'pointer'}});
+        addSel.appendChild(el('option',{value:''},'+ Add student'));
+        remaining.forEach(function(s){addSel.appendChild(el('option',{value:s.id},s.name));});
+        addSel.addEventListener('change',function(){
+          if(!addSel.value)return;
+          activeIds.push(addSel.value);
+          S.tests[realIdx]=Object.assign({},S.tests[realIdx],{studentIds:activeIds.slice()});
+          scheduleSync();rebuildChips();rebuildGrid();
+        });
+        stuChips.appendChild(addSel);
+      }
+    }
+    rebuildChips();
+    c.appendChild(stuChips);
+
+    // Results table — 5 columns: Student | Marks | % | Pass/Fail | Feedback
+    var tbl=el('div',{style:{overflowX:'auto'}});
+    var grid;
+    function rebuildGrid(){
+      tbl.innerHTML='';
+      grid=el('div',{style:{display:'grid',gridTemplateColumns:'1fr 80px 64px 72px 1fr 36px',gap:'0',minWidth:420}});
+      ['Student','Marks','%','Result','Feedback',''].forEach(function(h){
+        grid.appendChild(el('div',{style:{fontWeight:700,fontSize:11,color:'var(--muted)',padding:'6px 8px',borderBottom:'2px solid var(--border)',textTransform:'uppercase',letterSpacing:'.05em'}},h));
+      });
+
+      var testStudents=S.students.filter(function(stu){return activeIds.indexOf(stu.id)>-1;});
+      testStudents.forEach(function(stu){
+        var res=(test.results||[]).find(function(r){return r.studentId===stu.id;})||{studentId:stu.id,marks:'',feedback:''};
+        var pass=res.marks!==''&&Number(res.marks)>=Number(test.minMarks);
+        var fail=res.marks!==''&&Number(res.marks)<Number(test.minMarks);
+        var pct=res.marks!==''?Math.round(Number(res.marks)/Number(test.maxMarks)*100):'';
+
+        // Student name
+        grid.appendChild(el('div',{style:{padding:'8px',borderBottom:'1px solid var(--border)',fontWeight:600,color:'var(--navy)',fontSize:13,display:'flex',alignItems:'center'}},stu.name));
+
+        // Marks input
+        var marksInp=el('input',{type:'number',min:'0',max:test.maxMarks,value:String(res.marks),placeholder:'–',
+          style:{width:'100%',border:'1.5px solid var(--border)',borderRadius:7,padding:'6px 6px',fontSize:13,fontFamily:'inherit',textAlign:'center',boxSizing:'border-box',
+            background:pass?'var(--greenL)':fail?'var(--accentL)':'#fff',
+            color:pass?'var(--green)':fail?'var(--accent)':'var(--navy)'}});
+
+        // % cell (updates live)
+        var pctCell=el('div',{style:{padding:'8px',borderBottom:'1px solid var(--border)',fontWeight:700,fontSize:12,
+          color:pass?'var(--green)':fail?'var(--accent)':'var(--muted)',display:'flex',alignItems:'center',justifyContent:'center'}},
+          pct!==''?pct+'%':'–');
+        // Pass/fail cell
+        var pfCell=el('div',{style:{padding:'8px',borderBottom:'1px solid var(--border)',fontWeight:700,fontSize:12,
+          color:pass?'var(--green)':fail?'var(--accent)':'var(--muted)',display:'flex',alignItems:'center'}},
+          res.marks===''?'–':pass?'✓ Pass':'✗ Fail');
+
+        (function(stuId,r){
+          marksInp.addEventListener('input',function(){
+            var v=marksInp.value;
+            var results=test.results?[].concat(test.results):[];
+            var idx2=results.findIndex(function(x){return x.studentId===stuId;});
+            if(idx2>=0)results[idx2]=Object.assign({},results[idx2],{marks:v});
+            else results.push({studentId:stuId,marks:v,feedback:r.feedback||''});
+            S.tests[realIdx]=Object.assign({},S.tests[realIdx],{results:results});
+            scheduleSync();
+            var pf=v!==''&&Number(v)>=Number(test.minMarks);
+            var ff=v!==''&&Number(v)<Number(test.minMarks);
+            var p2=v!==''?Math.round(Number(v)/Number(test.maxMarks)*100):'';
+            marksInp.style.background=pf?'var(--greenL)':ff?'var(--accentL)':'#fff';
+            marksInp.style.color=pf?'var(--green)':ff?'var(--accent)':'var(--navy)';
+            pctCell.textContent=p2!==''?p2+'%':'–';
+            pctCell.style.color=pf?'var(--green)':ff?'var(--accent)':'var(--muted)';
+            pfCell.textContent=v===''?'–':pf?'✓ Pass':'✗ Fail';
+            pfCell.style.color=pf?'var(--green)':ff?'var(--accent)':'var(--muted)';
+          });
+        })(stu.id,res);
+
+        grid.appendChild(el('div',{style:{padding:'6px 4px',borderBottom:'1px solid var(--border)',display:'flex',alignItems:'center'}},marksInp));
+        grid.appendChild(pctCell);
+        grid.appendChild(pfCell);
+
+        // Feedback
+        var fbInp=el('input',{type:'text',value:res.feedback||'',placeholder:'Add feedback...',
+          style:{width:'100%',border:'1.5px solid var(--border)',borderRadius:7,padding:'6px 8px',fontSize:12,fontFamily:'inherit',boxSizing:'border-box'}});
+        (function(stuId,r){
+          fbInp.addEventListener('input',function(){
+            var results=test.results?[].concat(test.results):[];
+            var idx2=results.findIndex(function(x){return x.studentId===stuId;});
+            if(idx2>=0)results[idx2]=Object.assign({},results[idx2],{feedback:fbInp.value});
+            else results.push({studentId:stuId,marks:r.marks||'',feedback:fbInp.value});
+            S.tests[realIdx]=Object.assign({},S.tests[realIdx],{results:results});
+            scheduleSync();
+          });
+        })(stu.id,res);
+        grid.appendChild(el('div',{style:{padding:'6px 4px',borderBottom:'1px solid var(--border)',display:'flex',alignItems:'center'}},fbInp));
+        // Per-student copy button
+        (function(stu2,r2){
+          var cpBtn=el('button',{style:{border:'none',background:'none',cursor:'pointer',fontSize:15,padding:'4px',color:'var(--muted)'},title:'Copy this student\'s result'},'📋');
+          cpBtn.addEventListener('click',function(){
+            var res2=(test.results||[]).find(function(x){return x.studentId===stu2.id;})||{marks:'',feedback:''};
+            var pct2=res2.marks!==''?Math.round(Number(res2.marks)/Number(test.maxMarks)*100)+'%':'–';
+            var pass2=res2.marks!==''?(Number(res2.marks)>=Number(test.minMarks)?'✓ Pass':'✗ Fail'):'–';
+            var txt=test.title+' result for '+stu2.name+':\n'
+              +'Marks: '+(res2.marks!==''?res2.marks+'/'+test.maxMarks:'Not entered')+'\n'
+              +'Percentage: '+pct2+'\n'
+              +'Result: '+pass2+'\n'
+              +(res2.feedback?'Feedback: '+res2.feedback:'');
+            if(navigator.clipboard)navigator.clipboard.writeText(txt);
+            showToast('Copied '+stu2.name+'\'s result!');
+          });
+          grid.appendChild(el('div',{style:{padding:'4px',borderBottom:'1px solid var(--border)',display:'flex',alignItems:'center',justifyContent:'center'}},cpBtn));
+        })(stu,res);
+      });
+
+      tbl.appendChild(grid);
+    }
+    rebuildGrid();
+    c.appendChild(tbl);
+
+    // Delete test button
+    var delRow=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginTop:14,flexWrap:'wrap',gap:8}});
+
+    // Copy all results button
+    var copyAllBtn=mkBtn('📋 Copy Results','btn-ghost','btn-sm',function(){
+      var testStudents2=S.students.filter(function(stu){
+        return !test.studentIds||test.studentIds.indexOf(stu.id)>-1;
+      });
+      var lines=['📝 '+test.title+' — '+new Date(test.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})];
+      lines.push('Max Marks: '+test.maxMarks+' | Pass Mark: '+test.minMarks);
+      lines.push('─────────────────');
+      testStudents2.forEach(function(stu){
+        var res=(test.results||[]).find(function(r){return r.studentId===stu.id;})||{marks:'',feedback:''};
+        var pct=res.marks!==''?Math.round(Number(res.marks)/Number(test.maxMarks)*100)+'%':'–';
+        var pass=res.marks!==''?(Number(res.marks)>=Number(test.minMarks)?'✓ Pass':'✗ Fail'):'–';
+        lines.push(stu.name+': '+( res.marks!==''?res.marks+'/'+test.maxMarks:'Not entered')+' ('+pct+') '+pass);
+        if(res.feedback)lines.push('   Feedback: '+res.feedback);
+      });
+      if(navigator.clipboard)navigator.clipboard.writeText(lines.join('\n'));
+      showToast('Results copied!');
+    });
+    delRow.appendChild(copyAllBtn);
+
+    delRow.appendChild(mkBtn('🗑 Delete Test','btn-danger','btn-sm',function(){
+      if(!confirm('Delete this test?'))return;
+      S.tests.splice(realIdx,1);
+      scheduleSync();renderApp();
+    }));
+    c.appendChild(delRow);
+    pg.appendChild(c);
+  });
+  return pg;
+}
+
+function openTestModal(){
+  var form={title:'',subject:'',date:NOW.toISOString().slice(0,10),maxMarks:100,minMarks:35};
+  // Default: all students selected
+  var selectedIds=S.students.map(function(s){return s.id;});
+  var body=el('div',{style:{display:'grid',gap:14}});
+  var titleI=mkInp('text',form.title,function(v){form.title=v;},'e.g. Unit Test 1');
+  var subjI=mkInp('text',form.subject,function(v){form.subject=v;},'e.g. Maths');
+  var dateI=mkInp('date',form.date,function(v){form.date=v;});
+  var maxI=mkInp('number',form.maxMarks,function(v){form.maxMarks=Number(v)||100;},'100');
+  var minI=mkInp('number',form.minMarks,function(v){form.minMarks=Number(v)||35;},'35');
+  body.appendChild(fld('Test Title',titleI));
+  body.appendChild(el('div',{className:'grid-2'},fld('Subject',subjI),fld('Date',dateI)));
+  body.appendChild(el('div',{className:'grid-2'},fld('Max Marks',maxI),fld('Minimum Pass Marks',minI)));
+
+  // Student selector
+  if(S.students.length){
+    var stuSection=el('div');
+    var stuLabel=el('div',{style:{fontWeight:700,fontSize:13,color:'var(--navy)',marginBottom:6}},
+      'Students appearing for this test');
+    var hint2=el('div',{style:{fontSize:11,color:'var(--muted)',marginBottom:8}},
+      'All students selected by default. Tap to deselect students who didn\'t sit this test.');
+    stuSection.appendChild(stuLabel);
+    stuSection.appendChild(hint2);
+    var chips=el('div',{style:{display:'flex',flexWrap:'wrap',gap:6}});
+    S.students.forEach(function(stu){
+      var selected=true;
+      var chip=el('div',{style:{
+        padding:'5px 12px',borderRadius:20,border:'1.5px solid var(--accent)',
+        fontSize:12,fontWeight:600,cursor:'pointer',userSelect:'none',
+        background:'var(--accent)',color:'#fff',transition:'all .15s'
+      }},stu.name);
+      chip.addEventListener('click',function(){
+        selected=!selected;
+        if(selected){
+          if(selectedIds.indexOf(stu.id)===-1)selectedIds.push(stu.id);
+          chip.style.background='var(--accent)';chip.style.color='#fff';
+        } else {
+          selectedIds=selectedIds.filter(function(id){return id!==stu.id;});
+          chip.style.background='#fff';chip.style.color='var(--muted)';
+          chip.style.borderColor='var(--border)';
+        }
+      });
+      chips.appendChild(chip);
+    });
+    stuSection.appendChild(chips);
+    body.appendChild(stuSection);
+  }
+
+  body.appendChild(el('div',{className:'info-box',style:{background:'var(--accentL)',color:'var(--navy)'}},'After creating the test, enter marks and feedback for each student directly in the table.'));
+  var btns=el('div',{style:{display:'flex',gap:10,justifyContent:'flex-end'}});
+  btns.appendChild(mkBtn('Cancel','btn-ghost','btn-sm',closeModal));
+  btns.appendChild(mkBtn('Create Test','btn-primary','btn-sm',function(){
+    if(!form.title.trim()){showToast('Please enter a test title');return;}
+    if(!selectedIds.length){showToast('Select at least one student');return;}
+    if(!S.tests)S.tests=[];
+    S.tests.push({id:genId(),title:form.title,subject:form.subject,date:form.date,
+      maxMarks:form.maxMarks,minMarks:form.minMarks,
+      studentIds:selectedIds.slice(), // only selected students
+      results:[]});
+    scheduleSync();closeModal();renderApp();
+  }));
+  body.appendChild(btns);
+  showModal('Create New Test',body);
+}
+
+// ── POLICY HELPER — builds policy text for billing messages ──
+function buildPolicyText(p){
+  p=p||S.policies||{};
+  var lines=[];
+  if(p.paymentPolicy&&p.paymentPolicy.trim())lines.push(p.paymentPolicy.trim());
+  if(p.noShowPolicy&&p.noShowPolicy.trim())lines.push(p.noShowPolicy.trim());
+  if(p.cancellationPolicy&&p.cancellationPolicy.trim())lines.push(p.cancellationPolicy.trim());
+  if(p.customNote&&p.customNote.trim())lines.push(p.customNote.trim());
+  return lines.length?lines.join('\n'):'';
+}
+
+// ── POLICIES PAGE ──
+function pgPolicies(){
+  var local=Object.assign({
+    paymentPolicy:'Payment is due within 3 days of this message. Delayed payments will not be accepted.',
+    noShowPolicy:'Sessions that are scheduled and blocked but not attended will be charged in full.',
+    cancellationPolicy:'Cancellations made less than 24 hours in advance will be charged 50% of the session fee.',
+    customNote:''
+  },S.policies||{});
+
+  var pg=el('div',{className:'page'});
+  var top=el('div',{className:'page-top'});
+  top.appendChild(el('h2',{className:'page-title'},'📋 My Policies'));
+  top.appendChild(mkBtn('Save','btn-green','btn-sm',function(){
+    S.policies=Object.assign({},local);
+    scheduleSync();showToast('Policies saved!');renderApp();
+  }));
+  pg.appendChild(top);
+
+  var card=mkCard();
+  card.appendChild(el('div',{style:{fontSize:13,color:'var(--muted)',marginBottom:20,lineHeight:1.7,padding:'12px 14px',background:'var(--bg)',borderRadius:10,border:'1px solid var(--border)'}},'✏️  Every field below is fully editable. Write exactly what you want, or leave any field blank to skip that policy entirely. These appear automatically in your billing messages.'));
+
+  var previewBox=el('pre',{style:{background:'var(--bg)',borderRadius:10,padding:14,fontSize:12,lineHeight:1.9,whiteSpace:'pre-wrap',fontFamily:'inherit',color:'var(--navy)',border:'1px solid var(--border)',minHeight:60}});
+
+  function updatePreview(){
+    var txt=buildPolicyText(local);
+    previewBox.textContent=txt||'(No policies set — billing messages will have no policy text)';
+    previewBox.style.color=txt?'var(--navy)':'var(--muted)';
+  }
+
+  function policyField(title,desc,key,placeholder){
+    var w=el('div',{style:{marginBottom:22,paddingBottom:22,borderBottom:'1px solid var(--border)'}});
+    var hdr=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4}});
+    hdr.appendChild(el('div',{style:{fontWeight:700,color:'var(--navy)',fontSize:14}},title));
+    // Clear button
+    var clearBtn=el('button',{style:{fontSize:11,color:'var(--muted)',background:'none',border:'none',cursor:'pointer',padding:'2px 6px',borderRadius:6,textDecoration:'underline'}},'Clear');
+    clearBtn.addEventListener('click',function(){ta.value='';local[key]='';updatePreview();});
+    hdr.appendChild(clearBtn);
+    w.appendChild(hdr);
+    w.appendChild(el('div',{style:{fontSize:12,color:'var(--muted)',marginBottom:8}},desc));
+    var ta=el('textarea',{rows:2,placeholder:placeholder,
+      style:{border:'1.5px solid var(--border)',borderRadius:9,padding:'10px 12px',fontSize:13,
+        fontFamily:'inherit',width:'100%',outline:'none',resize:'vertical',
+        boxSizing:'border-box',lineHeight:1.7,color:'var(--navy)'}});
+    ta.value=local[key]||'';
+    ta.addEventListener('input',function(){local[key]=ta.value;updatePreview();});
+    // Focus styling
+    ta.addEventListener('focus',function(){ta.style.borderColor='var(--accent)';});
+    ta.addEventListener('blur',function(){ta.style.borderColor='var(--border)';});
+    w.appendChild(ta);
+    return w;
+  }
+
+  card.appendChild(policyField(
+    '💳 Payment Policy',
+    'When payment is due and what happens if it\'s late. Leave blank to include no payment policy.',
+    'paymentPolicy',
+    'e.g. Payment is due within 3 days of this message. Delayed payments will not be accepted.'
+  ));
+  card.appendChild(policyField(
+    '🚫 No-Show Policy',
+    'What happens if a student misses a scheduled session. Leave blank to skip.',
+    'noShowPolicy',
+    'e.g. Sessions not attended without prior notice will be charged in full.'
+  ));
+  card.appendChild(policyField(
+    '⏰ Cancellation Policy',
+    'Notice period and charges for late cancellations. Leave blank to skip.',
+    'cancellationPolicy',
+    'e.g. Cancellations must be made at least 24 hours in advance. Late cancellations will be charged 50%.'
+  ));
+  card.appendChild(policyField(
+    '📝 Additional Notes',
+    'UPI details, refund policy, or anything else you want in every billing message. Leave blank to skip.',
+    'customNote',
+    'e.g. All payments via UPI to 9876543210@upi. No refunds once sessions are confirmed.'
+  ));
+
+  pg.appendChild(card);
+
+  // Preview card
+  var previewCard=mkCard();
+  previewCard.appendChild(el('div',{style:{fontWeight:700,color:'var(--navy)',fontSize:14,marginBottom:10}},'👁 Preview — what appears in billing messages:'));
+  updatePreview();
+  previewCard.appendChild(previewBox);
+  pg.appendChild(previewCard);
+
+  return pg;
+}
+
+function pgRates(){
+  var local=JSON.parse(JSON.stringify(S.rateTable));
+  if(!local.tierSessions){
+    var oldRates=local;
+    local={tierSessions:[8,12,16,20],bands:[{key:'1-4',label:'1st to 4th Grade'},{key:'5-8',label:'5th to 8th Grade'},{key:'9-12',label:'9th to 12th Grade'}],rates:oldRates};
+  }
+  var pg=el('div',{className:'page'});
+  var top=el('div',{className:'page-top'});
+  top.appendChild(el('h2',{className:'page-title'},'Rate Table'));
+  top.appendChild(mkBtn('Save','btn-green','btn-sm',function(){
+    S.rateTable=JSON.parse(JSON.stringify(local));
+    scheduleSync();renderApp();showToast('Rates saved!');
+  }));
+  pg.appendChild(top);
+
+  var card=mkCard();
+
+  function rebuildRateUI(){
+    card.innerHTML='';
+
+    // ── Proper HTML table ──
+    var tbl=el('table',{style:{width:'100%',borderCollapse:'collapse',tableLayout:'fixed'}});
+
+    // Header row
+    var thead=el('thead');
+    var hrow=el('tr');
+
+    // Grade Band column header
+    var th0=el('th',{style:{
+      textAlign:'left',padding:'10px 14px',background:'var(--bg)',
+      fontSize:11,fontWeight:700,color:'var(--muted)',textTransform:'uppercase',
+      letterSpacing:'.06em',borderBottom:'2px solid var(--border)',
+      borderRight:'2px solid var(--border)',width:'28%'
+    }},'Grade Band');
+    hrow.appendChild(th0);
+
+    // Tier columns
+    local.tierSessions.forEach(function(t,ti){
+      var th=el('th',{style:{
+        textAlign:'center',padding:'8px 6px',background:'var(--bg)',
+        borderBottom:'2px solid var(--border)',borderRight:'1px solid var(--border)',
+        fontSize:12,color:'var(--navy)'
+      }});
+      var inner=el('div',{style:{display:'flex',alignItems:'center',justifyContent:'center',gap:4}});
+      var inp=el('input',{type:'number',min:'1',value:String(t),style:{
+        width:48,border:'1.5px solid var(--border)',borderRadius:7,
+        padding:'4px 4px',fontSize:13,textAlign:'center',fontFamily:'inherit',
+        fontWeight:700,color:'var(--navy)',background:'#fff'
+      }});
+      inp.title='Edit sessions';
+      (function(idx){inp.addEventListener('change',function(){local.tierSessions[idx]=parseInt(inp.value)||t;});})(ti);
+      var del=el('button',{style:{background:'none',border:'none',color:'#ccc',cursor:'pointer',fontSize:13,padding:'0',lineHeight:1,flexShrink:0}},'×');
+      del.title='Remove tier';
+      (function(idx){del.addEventListener('click',function(){
+        var tk=local.tierSessions[idx];
+        local.tierSessions.splice(idx,1);
+        Object.keys(local.rates).forEach(function(k){if(Number(k)===tk)delete local.rates[k];});
+        rebuildRateUI();
+      });})(ti);
+      var label=el('div',{style:{fontSize:10,color:'var(--muted)',marginTop:1}},'sessions');
+      var col=el('div',{style:{display:'flex',flexDirection:'column',alignItems:'center',gap:1}});
+      col.appendChild(inner);col.appendChild(label);
+      inner.appendChild(inp);inner.appendChild(del);
+      th.appendChild(col);hrow.appendChild(th);
+    });
+
+    // +Tier column
+    var thAdd=el('th',{style:{width:70,borderBottom:'2px solid var(--border)',padding:'8px 4px',background:'var(--bg)'}});
+    var addTierBtn=el('button',{style:{
+      background:'none',border:'1.5px dashed var(--accent)',borderRadius:7,
+      padding:'4px 8px',fontSize:11,color:'var(--accent)',cursor:'pointer',
+      fontFamily:'inherit',fontWeight:700,whiteSpace:'nowrap'
+    }},'+Tier');
+    addTierBtn.addEventListener('click',function(){
+      local.tierSessions.push((local.tierSessions[local.tierSessions.length-1]||20)+4);
+      rebuildRateUI();
+    });
+    thAdd.appendChild(addTierBtn);hrow.appendChild(thAdd);
+    thead.appendChild(hrow);tbl.appendChild(thead);
+
+    // Body rows
+    var tbody=el('tbody');
+    local.bands.forEach(function(band,bi){
+      var tr=el('tr',{style:{background:bi%2===0?'#fff':'var(--bg)'}});
+
+      // Band name cell
+      var td0=el('td',{style:{
+        padding:'10px 14px',borderRight:'2px solid var(--border)',
+        borderBottom:'1px solid var(--border)',verticalAlign:'middle'
+      }});
+      var nameInp=el('input',{type:'text',value:band.label,style:{
+        width:'100%',border:'none',background:'transparent',
+        fontSize:13,fontWeight:700,color:'var(--navy)',fontFamily:'inherit',
+        outline:'none',padding:0
+      }});
+      nameInp.title='Click to rename';
+      (function(idx){nameInp.addEventListener('input',function(){local.bands[idx].label=nameInp.value;});})(bi);
+      td0.appendChild(nameInp);tr.appendChild(td0);
+
+      // Rate cells per tier
+      local.tierSessions.forEach(function(t){
+        var val=(local.rates[t]&&local.rates[t][band.key])||'';
+        var td=el('td',{style:{
+          padding:'8px 10px',borderRight:'1px solid var(--border)',
+          borderBottom:'1px solid var(--border)',textAlign:'center'
+        }});
+        var inp=el('input',{type:'number',min:'0',value:String(val),placeholder:'—',style:{
+          width:'100%',border:'none',background:'transparent',
+          fontSize:14,fontWeight:600,color:'var(--navy)',
+          fontFamily:'inherit',textAlign:'center',outline:'none',padding:0
+        }});
+        inp.addEventListener('focus',function(){inp.style.background='var(--accentL)';inp.style.borderRadius='6px';inp.style.padding='2px 4px';});
+        inp.addEventListener('blur',function(){inp.style.background='transparent';inp.style.padding='0';});
+        (function(tier,bkey){inp.addEventListener('input',function(){
+          if(!local.rates[tier])local.rates[tier]={};
+          local.rates[tier][bkey]=Number(inp.value)||0;
+        });})(t,band.key);
+        td.appendChild(inp);tr.appendChild(td);
+      });
+
+      // Delete band cell
+      var tdDel=el('td',{style:{textAlign:'center',borderBottom:'1px solid var(--border)',padding:'8px 4px'}});
+      var delBand=el('button',{style:{background:'none',border:'none',color:'#ccc',cursor:'pointer',fontSize:15,padding:'2px 6px'}},'×');
+      delBand.title='Remove band';
+      (function(idx){delBand.addEventListener('click',function(){local.bands.splice(idx,1);rebuildRateUI();});})(bi);
+      tdDel.appendChild(delBand);tr.appendChild(tdDel);
+      tbody.appendChild(tr);
+    });
+    tbl.appendChild(tbody);
+
+    // +Add Grade Band footer row
+    var tfoot=el('tfoot');
+    var ftr=el('tr');
+    var ftd=el('td',{colSpan:local.tierSessions.length+2,style:{padding:'10px 14px',borderTop:'1px solid var(--border)'}});
+    var addBandBtn=el('button',{style:{
+      background:'none',border:'1.5px dashed var(--accent)',borderRadius:7,
+      padding:'5px 14px',fontSize:12,color:'var(--accent)',cursor:'pointer',
+      fontFamily:'inherit',fontWeight:700
+    }},'+Add Grade Band');
+    addBandBtn.addEventListener('click',function(){
+      local.bands.push({key:'band-'+Date.now(),label:'New Band'});
+      rebuildRateUI();
+    });
+    ftd.appendChild(addBandBtn);ftr.appendChild(ftd);tfoot.appendChild(ftr);tbl.appendChild(tfoot);
+
+    var wrap=el('div',{style:{overflowX:'auto',borderRadius:12,border:'1px solid var(--border)'}});
+    wrap.appendChild(tbl);
+    card.appendChild(wrap);
+    card.appendChild(el('div',{className:'info-box',style:{marginTop:14,background:'var(--accentL)',color:'var(--navy)'}},'Rates are per hour (₹). Click any cell to edit. Band names are editable inline. Changes save when you tap Save.'));
+  }
+
+  rebuildRateUI();
+  pg.appendChild(card);
+  return pg;
+}
+
+// MATERIALS
+function pgMaterials(){
+  var pg=el('div',{className:'page'});
+  var filterStu='all';
+  function render_(){
+    pg.innerHTML='';
+    var top=el('div',{className:'page-top'});
+    top.appendChild(el('h2',{className:'page-title'},'Study Materials'));
+    top.appendChild(mkBtn('+ Add','btn-primary','btn-sm',function(){openMaterialModal();}));
+    pg.appendChild(top);
+    var filterOpts=[['all','All Students']].concat(S.students.map(function(s){return[s.id,s.name];}));
+    var filterSel=mkSel(filterStu,filterOpts,function(v){filterStu=v;render_();});
+    filterSel.style.cssText='width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:14px;font-family:inherit;background:#fff;outline:none;-webkit-appearance:none;margin-bottom:14px;display:block;';
+    pg.appendChild(filterSel);
+    function szStr(b){return b>1048576?(b/1048576).toFixed(1)+'MB':(b/1024).toFixed(0)+'KB';}
+    var studsToShow=filterStu==='all'?S.students:S.students.filter(function(s){return s.id===filterStu;});
+    var anyShown=false;
+    studsToShow.forEach(function(stu){
+      var mats=S.materials.filter(function(m){return m.studentId===stu.id;});
+      if(!mats.length)return;
+      anyShown=true;
+      pg.appendChild(el('div',{style:{fontWeight:800,color:'var(--navy)',fontSize:14,marginBottom:8,paddingBottom:5,borderBottom:'2px solid var(--accentL)'}},stu.name+' - Grade '+stu.gradeNum));
+      mats.forEach(function(mat){
+        var isPDF=mat.fileType==='application/pdf';
+        var isImg=mat.fileType&&mat.fileType.startsWith('image/');
+        var ico=isImg?'IMG':isPDF?'PDF':'DOC';
+        var icoColor=isPDF?'var(--accent)':isImg?'var(--green)':'var(--muted)';
+        var c=mkCard();
+        c.appendChild(el('div',{style:{display:'flex',gap:12,alignItems:'center'}},
+          el('div',{style:{fontSize:11,fontWeight:800,color:icoColor,background:'var(--bg)',padding:'4px 8px',borderRadius:6,border:'1.5px solid var(--border)'}},ico),
+          el('div',{style:{flex:1}},
+            el('div',{style:{fontWeight:700,color:'var(--navy)',fontSize:14}},mat.name),
+            el('div',{style:{color:'var(--muted)',fontSize:11,marginTop:2}},[mat.type,mat.size?szStr(mat.size):null,mat.annotations?'annotated':null].filter(Boolean).join(' - ')))));
+        if(mat.notes)c.appendChild(el('div',{style:{color:'var(--muted)',fontSize:12,marginTop:6,fontStyle:'italic'}},mat.notes.slice(0,80)+(mat.notes.length>80?'...':'')));
+        var br=el('div',{style:{display:'flex',gap:10,marginTop:14,flexWrap:'wrap'}});
+        if(mat.fileUrl||mat.dataUrl){
+          (function(m_){
+            var fileHref=m_.fileUrl||m_.dataUrl||'';
+            br.appendChild(mkBtn('Open & Annotate','btn-primary','btn-sm',function(){openAnnotator(m_);}));
+            if(fileHref){
+              br.appendChild(mkBtn('Download','btn-ghost','btn-sm',function(){
+                var a=document.createElement('a');a.href=fileHref;a.download=m_.name||'document';a.target='_blank';
+                document.body.appendChild(a);a.click();document.body.removeChild(a);
+              }));
+            }
+          })(mat);
+        }
+        (function(mid_){br.appendChild(mkBtn('Delete','btn-danger','btn-sm',function(){mutate('materials',function(arr){var i=arr.findIndex(function(x){return x.id===mid_;});if(i>-1)arr.splice(i,1);});saveMatFiles();}));})(mat.id);
+        c.appendChild(br);pg.appendChild(c);
+      });
+      pg.appendChild(el('div',{style:{height:10}}));
+    });
+    if(!anyShown)pg.appendChild(el('div',{style:{color:'var(--muted)',textAlign:'center',padding:40}},'No materials yet. Tap + Add to upload.'));
+  }
+  render_();
+  return pg;
+}
+function openMaterialModal(){
+  var form={name:'',type:'notes',studentId:(S.students[0]&&S.students[0].id)||'',notes:''};
+  var pending=null;
+  var stuS=mkSel(form.studentId,[['','Select student...']].concat(S.students.map(function(s){return[s.id,s.name];})),function(v){form.studentId=v;});
+  var typS=mkSel(form.type,[['notes','Notes'],['question','Question Paper'],['worksheet','Worksheet'],['resource','Resource']],function(v){form.type=v;});
+  var nameI=mkInp('text',form.name,function(v){form.name=v;},'e.g. Chapter 5 Notes');
+  var notTA=mkTa(form.notes,function(v){form.notes=v;},3,'Weak areas, topics to cover...');
+  var dz=el('div',{className:'drop-zone'},el('div',{style:{fontSize:22,marginBottom:4}},'\uD83D\uDCCE'),el('div',{style:{color:'var(--muted)',fontSize:13}},'Tap to upload PDF or image'),el('div',{style:{color:'var(--muted)',fontSize:11,marginTop:2}},'PDF, PNG, JPG supported'));
+  var fi=el('input',{type:'file',accept:'.pdf,.png,.jpg,.jpeg,.webp',style:{display:'none'}});
+  fi.addEventListener('change',async function(e){
+    var f=e.target.files[0];if(!f)return;
+    dz.innerHTML='<div style="font-size:13px;color:var(--muted)">Uploading...</div>';
+    // Upload directly to Supabase Storage
+    var path=supa.uid+'/'+Date.now()+'_'+f.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    var result=await supa.uploadFile(f,path);
+    if(result.ok){
+      pending={name:f.name,fileType:f.type,fileUrl:result.url,storagePath:path,size:f.size};
+      if(!nameI.value.trim()){nameI.value=f.name.replace(/\.[^.]+$/,'');}
+      dz.classList.add('has-file');
+      dz.innerHTML='<div style="font-weight:700;color:var(--green);font-size:13px">'+f.name+' - uploaded!</div>';
+    } else {
+      dz.innerHTML='<div style="color:#C0392B;font-size:13px">Upload failed: '+result.error+'</div>';
+    }
+  });
+  dz.addEventListener('click',function(){fi.click();});
+  var body=el('div',{style:{display:'grid',gap:14}});
+  body.appendChild(fld('Student',stuS));
+  body.appendChild(fld('Type',typS));
+  body.appendChild(fld('Title',nameI));
+  var fileWrap=el('div',{});fileWrap.appendChild(el('label',{style:{fontSize:11,fontWeight:700,color:'var(--muted)',textTransform:'uppercase',letterSpacing:'.06em',display:'block',marginBottom:6}},'Attach File'));fileWrap.appendChild(dz);fileWrap.appendChild(fi);
+  body.appendChild(fileWrap);
+  body.appendChild(fld('Notes',notTA));
+  var btns=el('div',{style:{display:'flex',gap:10,justifyContent:'flex-end'}});
+  btns.appendChild(mkBtn('Cancel','btn-ghost','btn-sm',closeModal));
+  btns.appendChild(mkBtn('Add Material','btn-primary','btn-sm',function(){
+    if(!form.studentId||!nameI.value.trim())return;
+    form.name=nameI.value;form.notes=notTA.value;
+    var entry=Object.assign({},form,pending||{},{id:genId(),annotations:''});
+    // fileUrl from storage, or dataUrl if somehow still base64
+    mutate('materials',function(arr){arr.push(entry);});
+    closeModal();
+  }));
+  body.appendChild(btns);
+  showModal('Add Study Material',body);
+}
+
+// ANNOTATOR
+function loadPDFJS(cb){
+  if(window.pdfjsLib){cb();return;}
+  var s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+  s.onload=function(){
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    cb();
+  };
+  document.head.appendChild(s);
+}
+
+function openAnnotator(mat){
+  var tool='scroll',color='#C0392B',size=3,showNotes=false;
+  var wrap=el('div',{style:{display:'flex',flexDirection:'column',height:'100%',overflow:'hidden',minHeight:0}});
+  var tb=el('div',{className:'ann-toolbar'});
+  var toolBtns={};
+  [['scroll','Scroll'],['pen','Pen'],['highlight','Highlight'],['eraser','Eraser']].forEach(function(pair){
+    var t=pair[0],lbl=pair[1];
+    var b=el('button',{className:'ann-btn'+(t==='scroll'?' active':'')},lbl);
+    b.addEventListener('click',function(){
+      tool=t;
+      Object.keys(toolBtns).forEach(function(k){toolBtns[k].classList.remove('active');});
+      b.classList.add('active');
+      var cvEl=document.getElementById('ann-cv');
+      if(cvEl){cvEl.style.pointerEvents=(t==='scroll')?'none':'all';}
+    });
+    toolBtns[t]=b;tb.appendChild(b);
+  });
+  var cRow=el('div',{style:{display:'flex',gap:4,marginLeft:4,alignItems:'center'}});
+  ['#C0392B','#1A2740','#3D6B41','#C49A2A','#8E44AD','#000'].forEach(function(cl){
+    var d=el('div',{style:{width:16,height:16,borderRadius:'50%',background:cl,border:cl===color?'3px solid #555':'2px solid #ddd',cursor:'pointer',flexShrink:0}});
+    d.addEventListener('click',function(){color=cl;cRow.querySelectorAll('div').forEach(function(x){x.style.border='2px solid #ddd';});d.style.border='3px solid #555';});
+    cRow.appendChild(d);
+  });
+  tb.appendChild(cRow);
+  var notesToggle=el('button',{className:'ann-btn',style:{marginLeft:4}},'Notes');
+  notesToggle.addEventListener('click',function(){showNotes=!showNotes;notesPanel.classList.toggle('open',showNotes);notesToggle.textContent=showNotes?'Notes On':'Notes';});
+  tb.appendChild(notesToggle);
+  var ml=el('div',{style:{marginLeft:'auto',display:'flex',gap:6}});
+  var clearB=el('button',{className:'ann-btn',style:{color:'#C0392B',border:'1.5px solid #F5B7B1',background:'#FDECEA'}},'Clear');
+  clearB.addEventListener('click',function(){var cv=document.getElementById('ann-cv');if(cv)cv.getContext('2d').clearRect(0,0,cv.width,cv.height);});
+  var saveB=el('button',{className:'ann-btn',style:{color:'#fff',background:'var(--green)',border:'none'}},'Save');
+  saveB.addEventListener('click',function(){
+    var cv=document.getElementById('ann-cv');
+    var nt=document.getElementById('ann-nt');
+    var ann=cv?cv.toDataURL():'';
+    var notes=nt?nt.value:mat.notes||'';
+    mutate('materials',function(arr){var i=arr.findIndex(function(x){return x.id===mat.id;});if(i>-1)arr[i]=Object.assign({},arr[i],{annotations:ann,notes:notes});});
+    scheduleSync();closeModal();
+  });
+  ml.appendChild(clearB);ml.appendChild(saveB);tb.appendChild(ml);
+  wrap.appendChild(tb);
+  var body_=el('div',{className:'ann-body'});
+  var docWrap=el('div',{className:'ann-doc'});
+  var isPDF=mat.fileType==='application/pdf';
+  var isImg=mat.fileType&&mat.fileType.startsWith('image/');
+  var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+
+  if(isPDF){
+    var pdfSrc=mat.fileUrl||mat.dataUrl||'';
+    if(isIOS){
+      // iOS: just open in Safari, no inline rendering possible
+      var iosDiv=el('div',{style:{padding:'50px 24px',textAlign:'center'}});
+      iosDiv.appendChild(el('div',{style:{fontSize:52,marginBottom:14}},'📄'));
+      iosDiv.appendChild(el('div',{style:{fontWeight:800,color:'var(--navy)',fontSize:15,marginBottom:20}},mat.name));
+      var iosOpen=el('a',{href:pdfSrc,target:'_blank',style:{display:'inline-block',background:'var(--accent)',color:'#fff',borderRadius:12,padding:'14px 32px',fontWeight:700,fontSize:15,textDecoration:'none'}});
+      iosOpen.textContent='Open PDF in Safari';
+      iosDiv.appendChild(iosOpen);
+      docWrap.appendChild(iosDiv);
+    } else {
+      // Desktop: render PDF with PDF.js onto a canvas
+      var pdfWrap=el('div',{style:{position:'relative',width:'100%'}});
+      var annCv=el('canvas',{id:'ann-cv',style:{position:'absolute',top:0,left:0,width:'100%',height:'100%',touchAction:'none',cursor:'crosshair',background:'transparent',pointerEvents:'none',zIndex:2}});
+      var statusDiv=el('div',{style:{padding:'30px',textAlign:'center',color:'var(--muted)',fontSize:13}});
+      statusDiv.textContent='Loading PDF...';
+      pdfWrap.appendChild(statusDiv);
+      pdfWrap.appendChild(annCv);
+      docWrap.appendChild(pdfWrap);
+      loadPDFJS(function(){
+        var loadingTask=window.pdfjsLib.getDocument(pdfSrc);
+        loadingTask.promise.then(function(pdf){
+          statusDiv.remove();
+          var totalPages=pdf.numPages;
+          var renderPage=function(pageNum){
+            pdf.getPage(pageNum).then(function(page){
+              var vp=page.getViewport({scale:1.5});
+              var pgCanvas=document.createElement('canvas');
+              pgCanvas.width=vp.width;pgCanvas.height=vp.height;
+              pgCanvas.style.cssText='width:100%;display:block;margin-bottom:4px;';
+              pdfWrap.insertBefore(pgCanvas,annCv);
+              page.render({canvasContext:pgCanvas.getContext('2d'),viewport:vp}).promise.then(function(){
+                if(pageNum<totalPages)renderPage(pageNum+1);
+                else{
+                  // All pages rendered - set up annotation canvas over full height
+                  setTimeout(function(){
+                    annCv.width=pdfWrap.offsetWidth||800;
+                    annCv.height=pdfWrap.offsetHeight||1000;
+                    if(mat.annotations){
+                      var im=new Image();
+                      im.onload=function(){annCv.getContext('2d').drawImage(im,0,0,annCv.width,annCv.height);};
+                      im.src=mat.annotations;
+                    }
+                    setupDraw(annCv,function(){return{tool:tool,color:color,size:size};});
+                  },100);
+                }
+              });
+            });
+          };
+          renderPage(1);
+        }).catch(function(err){
+          statusDiv.textContent='Could not load PDF: '+err.message;
+          pdfWrap.appendChild(statusDiv);
+        });
+      });
+    }
+  } else if(isImg){
+    var imgSrc=mat.fileUrl||mat.dataUrl||'';
+    var img=el('img',{src:imgSrc,style:{width:'100%',display:'block',userSelect:'none'}});
+    docWrap.appendChild(img);
+    var cv=el('canvas',{id:'ann-cv',style:{position:'absolute',top:0,left:0,width:'100%',height:'100%',touchAction:'none',cursor:'crosshair',background:'transparent',pointerEvents:'none'}});
+    docWrap.appendChild(cv);
+    setTimeout(function(){
+      cv.width=docWrap.scrollWidth||800;cv.height=docWrap.scrollHeight||600;
+      if(mat.annotations){var im2=new Image();im2.onload=function(){cv.getContext('2d').drawImage(im2,0,0,cv.width,cv.height);};im2.src=mat.annotations;}
+      setupDraw(cv,function(){return{tool:tool,color:color,size:size};});
+    },120);
+  } else {
+    var fileHref2=mat.fileUrl||mat.dataUrl||'';
+    docWrap.appendChild(el('div',{style:{padding:40,textAlign:'center',color:'var(--muted)'}},
+      el('div',{style:{fontSize:14,marginBottom:10}},mat.name),
+      el('a',{href:fileHref2,download:mat.name,target:'_blank',style:{color:'var(--accent)',fontWeight:600}},'Download')));
+  }
+
+  body_.appendChild(docWrap);
+  var notesPanel=el('div',{className:'ann-notes-panel'});
+  notesPanel.appendChild(el('div',{className:'ann-notes-lbl'},'Class Notes'));
+  var notTA=el('textarea',{id:'ann-nt',className:'ann-notes-ta',placeholder:'Weak areas, topics to cover...'},mat.notes||'');
+  notesPanel.appendChild(notTA);
+  body_.appendChild(notesPanel);
+  wrap.appendChild(body_);
+  showModal(mat.name,wrap,true);
+}
+
+function setupDraw(canvas,getState){
+  var drawing=false,last=null;
+  function getPos(e){
+    var r=canvas.getBoundingClientRect();
+    var sx=canvas.width/r.width,sy=canvas.height/r.height;
+    var src=e.touches?e.touches[0]:e;
+    return{x:(src.clientX-r.left)*sx,y:(src.clientY-r.top)*sy};
+  }
+  function draw(from,to){
+    var s=getState();var ctx=canvas.getContext('2d');
+    ctx.beginPath();ctx.moveTo(from.x,from.y);ctx.lineTo(to.x,to.y);
+    if(s.tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.lineWidth=s.size*5;ctx.strokeStyle='rgba(0,0,0,1)';}
+    else if(s.tool==='highlight'){ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color+'55';ctx.lineWidth=s.size*5;}
+    else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.size;}
+    ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+  }
+  canvas.addEventListener('mousedown',function(e){e.preventDefault();drawing=true;last=getPos(e);});
+  canvas.addEventListener('mousemove',function(e){if(!drawing)return;e.preventDefault();var p=getPos(e);draw(last,p);last=p;});
+  canvas.addEventListener('mouseup',function(){drawing=false;});
+  canvas.addEventListener('mouseleave',function(){drawing=false;});
+  canvas.addEventListener('touchstart',function(e){e.preventDefault();drawing=true;last=getPos(e);},{passive:false});
+  canvas.addEventListener('touchmove',function(e){if(!drawing)return;e.preventDefault();var p=getPos(e);draw(last,p);last=p;},{passive:false});
+  canvas.addEventListener('touchend',function(){drawing=false;});
+}
+
+// WHITEBOARD
+function pgWhiteboard(){
+  var tool='pen',color='#1A2740',size=3,drawing=false,last=null,bgColor='#FFFFFF';
+  // Infinite scroll: pages array, each is a canvas imageData snapshot
+  var PAGE_H=1800; // height of each page in canvas pixels
+  var pageCount=1;
+  var wrap=el('div',{className:'page-wb'});
+  var tb=el('div',{className:'wb-toolbar'});
+  var toolBtns={};
+  ['pen','highlight','eraser','text'].forEach(function(t){
+    var label=t.charAt(0).toUpperCase()+t.slice(1);
+    var b=el('button',{className:'wb-btn'+(t==='pen'?' active':'')},label);
+    b.addEventListener('click',function(){tool=t;Object.keys(toolBtns).forEach(function(k){toolBtns[k].classList.remove('active');});b.classList.add('active');});
+    toolBtns[t]=b;tb.appendChild(b);
+  });
+  tb.appendChild(el('div',{style:{width:1,height:24,background:'rgba(255,255,255,.2)',margin:'0 2px'}}));
+  var cRow=el('div',{style:{display:'flex',gap:3,alignItems:'center'}});
+  ['#1A2740','#FFFFFF','#C0392B','#3D6B41','#C49A2A','#2980B9','#8E44AD','#000'].forEach(function(cl){
+    var d=el('div',{className:'wb-dot'+(cl===color?' active':''),style:{background:cl}});
+    d.addEventListener('click',function(){color=cl;cRow.querySelectorAll('.wb-dot').forEach(function(x){x.classList.remove('active');});d.classList.add('active');});
+    cRow.appendChild(d);
+  });
+  tb.appendChild(cRow);
+  tb.appendChild(el('div',{style:{width:1,height:24,background:'rgba(255,255,255,.2)',margin:'0 2px'}}));
+  var sRow=el('div',{style:{display:'flex',gap:3}});
+  [[2,'.'],[4,'-'],[7,'_'],[12,'=']].forEach(function(pair){
+    var s_=pair[0],l_=pair[1];
+    var d=el('div',{className:'wb-sz'+(s_===size?' active':'')},l_);
+    d.addEventListener('click',function(){size=s_;sRow.querySelectorAll('.wb-sz').forEach(function(x){x.classList.remove('active');});d.classList.add('active');});
+    sRow.appendChild(d);
+  });
+  tb.appendChild(sRow);
+  var rWrap=el('div',{style:{marginLeft:'auto',display:'flex',gap:4,flexWrap:'wrap'}});
+  var undoB=el('button',{className:'wb-btn'},'Undo');
+  var redoB=el('button',{className:'wb-btn'},'Redo');
+  var clrB=el('button',{className:'wb-btn'},'Clear');
+  var newPageB=el('button',{className:'wb-btn',style:{background:'#2980B9',borderColor:'#2980B9'}},'+ Page');
+  var savB=el('button',{className:'wb-btn',style:{background:'var(--accent)',borderColor:'var(--accent)'}},'Save PNG');
+  rWrap.appendChild(undoB);rWrap.appendChild(redoB);rWrap.appendChild(clrB);rWrap.appendChild(newPageB);rWrap.appendChild(savB);
+  tb.appendChild(rWrap);wrap.appendChild(tb);
+
+  // Scrollable canvas container
+  var cvWrap=el('div',{id:'wb-wrap',style:{overflowY:'auto',flex:1,position:'relative',background:'#e8e8e8'}});
+  var cv=el('canvas',{id:'wb-canvas',style:{display:'block',margin:'0 auto',cursor:'crosshair',touchAction:'none'}});
+  cvWrap.appendChild(cv);
+  var txtBox=el('div',{className:'wb-text-box',style:{display:'none'}});
+  var txtSzInp=el('input',{id:'wb-txt-sz',type:'number',value:'24',min:'8',max:'120',style:{width:54,border:'1.5px solid var(--border)',borderRadius:7,padding:'6px 8px',fontSize:13,fontFamily:'inherit',textAlign:'center'}});
+  var txtFontSel=el('select',{id:'wb-txt-font',style:{border:'1.5px solid var(--border)',borderRadius:7,padding:'6px 8px',fontSize:12,fontFamily:'inherit',background:'#fff'}});
+  [['Arial,sans-serif','Sans'],['Georgia,serif','Serif'],['monospace','Mono'],['cursive','Cursive']].forEach(function(p){var o=el('option',{value:p[0]},p[1]);txtFontSel.appendChild(o);});
+  var txtInp=el('input',{type:'text',placeholder:'Type and tap Place...',style:{border:'1.5px solid var(--border)',borderRadius:8,padding:'8px 12px',fontSize:14,fontFamily:'inherit',outline:'none',flex:1,minWidth:120}});
+  var textPos=null;
+  function placeText(){
+    if(!textPos||!txtInp.value.trim()){txtBox.style.display='none';txtInp.value='';return;}
+    var ctx=cv.getContext('2d');var fsz=parseInt(document.getElementById('wb-txt-sz').value)||24;var ffm=document.getElementById('wb-txt-font').value||'Georgia,serif';ctx.font=fsz+'px '+ffm;ctx.fillStyle=color;ctx.fillText(txtInp.value,textPos.x,textPos.y);
+    txtBox.style.display='none';txtInp.value='';snap();
+  }
+  txtInp.addEventListener('keydown',function(e){if(e.key==='Enter')placeText();});
+  var placeBtn=mkBtn('Place','btn-primary','btn-sm',placeText);
+  var cancelBtn=mkBtn('Cancel','btn-ghost','btn-sm',function(){txtBox.style.display='none';txtInp.value='';});
+  var row1=el('div',{style:{display:'flex',gap:6,alignItems:'center',width:'100%',marginBottom:6}});
+  row1.appendChild(el('span',{style:{fontSize:11,color:'var(--muted)',fontWeight:600,flexShrink:0}},'Size:'));row1.appendChild(txtSzInp);
+  row1.appendChild(el('span',{style:{fontSize:11,color:'var(--muted)',fontWeight:600,flexShrink:0,marginLeft:8}},'Font:'));row1.appendChild(txtFontSel);
+  var row2=el('div',{style:{display:'flex',gap:6,width:'100%'}});
+  row2.appendChild(txtInp);row2.appendChild(placeBtn);row2.appendChild(cancelBtn);
+  txtBox.style.flexDirection='column';txtBox.style.minWidth='280px';
+  txtBox.appendChild(row1);txtBox.appendChild(row2);
+  cvWrap.appendChild(txtBox);
+  wrap.appendChild(cvWrap);
+
+  // Page indicator
+  var pageInd=el('div',{style:{position:'sticky',bottom:8,left:0,right:0,textAlign:'center',pointerEvents:'none'}});
+  var pageLabel=el('span',{style:{background:'rgba(0,0,0,0.5)',color:'#fff',padding:'3px 10px',borderRadius:20,fontSize:12}});
+  pageInd.appendChild(pageLabel);cvWrap.appendChild(pageInd);
+
+  var history=[],hIdx=-1;
+  function snap(){var d=cv.toDataURL();history=history.slice(0,hIdx+1);history.push(d);if(history.length>60)history.shift();hIdx=Math.min(hIdx+1,history.length-1);}
+  function restore(idx){if(idx<0||!history[idx])return;var im=new Image();im.onload=function(){var ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);initBg(ctx);ctx.drawImage(im,0,0,cv.width,cv.height);};im.src=history[idx];}
+  function initBg(ctx){
+    ctx.fillStyle=bgColor;ctx.fillRect(0,0,cv.width,cv.height);
+    // Draw page dividers
+    ctx.save();ctx.setLineDash([8,8]);ctx.strokeStyle='#ccc';ctx.lineWidth=2;
+    for(var i=1;i<pageCount;i++){ctx.beginPath();ctx.moveTo(0,PAGE_H*i);ctx.lineTo(cv.width,PAGE_H*i);ctx.stroke();}
+    ctx.restore();
+    pageLabel.textContent=pageCount+' page'+(pageCount>1?'s':'');
+  }
+  function addPage(){
+    // Save current content
+    var imgData=cv.getContext('2d').getImageData(0,0,cv.width,cv.height);
+    pageCount++;
+    cv.height=PAGE_H*pageCount;
+    var ctx=cv.getContext('2d');
+    ctx.fillStyle=bgColor;ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.putImageData(imgData,0,0);
+    // Draw dividers
+    ctx.save();ctx.setLineDash([8,8]);ctx.strokeStyle='#ccc';ctx.lineWidth=2;
+    for(var i=1;i<pageCount;i++){ctx.beginPath();ctx.moveTo(0,PAGE_H*i);ctx.lineTo(cv.width,PAGE_H*i);ctx.stroke();}
+    ctx.restore();
+    pageLabel.textContent=pageCount+' page'+(pageCount>1?'s':'');
+    // Scroll to new page
+    cvWrap.scrollTop=PAGE_H*(pageCount-1)*(cvWrap.offsetHeight/cv.height)||cvWrap.scrollHeight;
+    snap();
+  }
+
+  setTimeout(function(){
+    cv.width=Math.max(cvWrap.offsetWidth,600)*2;
+    cv.height=PAGE_H*pageCount;
+    var ctx=cv.getContext('2d');
+    initBg(ctx);snap();
+    undoB.addEventListener('click',function(){if(hIdx>0){restore(hIdx-1);hIdx--;}});
+    redoB.addEventListener('click',function(){if(hIdx<history.length-1){restore(hIdx+1);hIdx++;}});
+    clrB.addEventListener('click',function(){pageCount=1;cv.height=PAGE_H;var ctx=cv.getContext('2d');initBg(ctx);snap();});
+    newPageB.addEventListener('click',addPage);
+    savB.addEventListener('click',function(){var link=document.createElement('a');link.download='whiteboard-'+Date.now()+'.png';link.href=cv.toDataURL();link.click();});
+
+    function getPos(e){
+      var r=cv.getBoundingClientRect();
+      var sx=cv.width/r.width,sy=cv.height/r.height;
+      var src=e.touches?e.touches[0]:e;
+      return{x:(src.clientX-r.left)*sx,y:(src.clientY-r.top)*sy};
+    }
+    cv.addEventListener('mousedown',function(e){e.preventDefault();if(tool==='text'){
+      textPos=getPos(e);
+      var wr=cvWrap.getBoundingClientRect();
+      var tx=e.clientX-wr.left,ty=e.clientY-wr.top;
+      txtBox.style.left=Math.min(tx,wr.width-300)+'px';
+      txtBox.style.top=Math.max(4,ty-160)+'px';
+      txtBox.style.transform='none';
+      txtBox.style.display='flex';txtInp.focus();return;}drawing=true;last=getPos(e);});
+    cv.addEventListener('mousemove',function(e){if(!drawing||tool==='text')return;e.preventDefault();var p=getPos(e);drawWB(ctx,last,p,tool,color,size);last=p;});
+    cv.addEventListener('mouseup',function(){if(drawing){drawing=false;snap();}});
+    cv.addEventListener('mouseleave',function(){if(drawing){drawing=false;snap();}});
+    cv.addEventListener('touchstart',function(e){e.preventDefault();if(tool==='text'){
+      textPos=getPos(e);
+      var wr=cvWrap.getBoundingClientRect();
+      var t0=e.touches[0];
+      var tx=t0.clientX-wr.left,ty=t0.clientY-wr.top;
+      txtBox.style.left=Math.min(tx,wr.width-300)+'px';
+      txtBox.style.top=Math.max(4,ty-160)+'px';
+      txtBox.style.transform='none';
+      txtBox.style.display='flex';txtInp.focus();return;}drawing=true;last=getPos(e);},{passive:false});
+    cv.addEventListener('touchmove',function(e){if(!drawing||tool==='text')return;e.preventDefault();var p=getPos(e);drawWB(ctx,last,p,tool,color,size);last=p;},{passive:false});
+    cv.addEventListener('touchend',function(){if(drawing){drawing=false;snap();}});
+  },80);
+  return wrap;
+}
+
+function drawWB(ctx,from,to,tool,color,size){
+  ctx.beginPath();ctx.moveTo(from.x,from.y);ctx.lineTo(to.x,to.y);
+  ctx.globalCompositeOperation='source-over';
+  if(tool==='eraser'){ctx.strokeStyle='#FFFFFF';ctx.lineWidth=size*8;}
+  else if(tool==='highlight'){ctx.strokeStyle=color+'55';ctx.lineWidth=size*6;}
+  else{ctx.strokeStyle=color;ctx.lineWidth=size;}
+  ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+  ctx.globalCompositeOperation='source-over';
+}
+
+// PWA SETUP
+var SW_SRC='const CACHE="ts-v3";self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(["./"])));self.skipWaiting();});self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim();});self.addEventListener("fetch",e=>{if(e.request.url.includes("supabase"))return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).catch(()=>caches.match("./"))));});';
+if('serviceWorker' in navigator){try{var swBlob=new Blob([SW_SRC],{type:'application/javascript'});navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(function(){});}catch(e){}}
+try{
+  var mf={name:'TutOrg',short_name:'TutOrg',start_url:'./',display:'standalone',background_color:'#1A2740',theme_color:'#1A2740',icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='80' fill='%231A2740'/%3E%3Ctext x='256' y='340' text-anchor='middle' font-size='200' font-family='serif'%3ETO%3C/text%3E%3C/svg%3E",sizes:'512x512',type:'image/svg+xml',purpose:'any maskable'}]};
+  var mBlob=new Blob([JSON.stringify(mf)],{type:'application/json'});
+  var mLink=document.createElement('link');mLink.rel='manifest';mLink.href=URL.createObjectURL(mBlob);document.head.appendChild(mLink);
+}catch(e){}
+
+// iOS install banner
+window.addEventListener('load',function(){
+  var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  var isStandalone=window.navigator.standalone;
+  if(isIOS&&!isStandalone&&!localStorage.getItem('ts_banner_shown')){
+    var b=document.createElement('div');
+    b.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#1A2740;color:#fff;padding:12px 18px;padding-bottom:calc(12px + env(safe-area-inset-bottom));font-family:Georgia,serif;font-size:13px;z-index:9999;display:flex;align-items:center;justify-content:space-between;gap:12px;';
+    b.innerHTML='<span>Tap <b>Share</b> then <b>Add to Home Screen</b> to install</span><button style="border:none;background:rgba(255,255,255,.2);color:#fff;border-radius:8px;padding:6px 12px;font-family:inherit;font-size:12px;cursor:pointer;font-weight:700;">OK</button>';
+    b.querySelector('button').addEventListener('click',function(){localStorage.setItem('ts_banner_shown','1');b.remove();});
+    document.body.appendChild(b);
+  }
+});
+
+// Handle password reset redirect — Supabase puts token in URL hash
+function checkResetToken(){
+  var hash=window.location.hash;
+  if(!hash)return false;
+  var params={};
+  hash.replace('#','').split('&').forEach(function(p){var kv=p.split('=');params[kv[0]]=decodeURIComponent(kv[1]||'');});
+  if(params.type==='recovery'&&params.access_token){
+    showResetPasswordPage(params.access_token);
+    return true;
+  }
+  return false;
+}
+
+function showResetPasswordPage(accessToken){
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('main-app').style.display='none';
+  var screen=document.getElementById('auth-screen');
+  screen.innerHTML='';
+  [120,200,300,420,560,700,860].forEach(function(s){screen.appendChild(el('div',{className:'auth-ring',style:{width:s+'px',height:s+'px',top:'50%',left:'50%',transform:'translate(-50%,-50%)'}}));});
+  screen.appendChild(el('div',{className:'auth-logo'},'\uD83C\uDF93'));
+  screen.appendChild(el('div',{className:'auth-title'},'Set New Password'));
+  screen.appendChild(el('div',{className:'auth-sub'},'Choose a new password for your account'));
+  var form=el('div',{className:'auth-form'});
+  var passVal='',pass2Val='';
+  var errDiv=el('div',{style:{color:'#ff6b6b',fontSize:13,textAlign:'center',minHeight:18}});
+  var passWrap=el('div',{});
+  passWrap.appendChild(el('label',{className:'auth-label'},'New Password'));
+  var passInp=el('input',{className:'auth-input',type:'password',placeholder:'At least 6 characters',autocomplete:'new-password'});
+  passInp.addEventListener('input',function(e){passVal=e.target.value;});
+  passWrap.appendChild(passInp);
+  var pass2Wrap=el('div',{});
+  pass2Wrap.appendChild(el('label',{className:'auth-label'},'Confirm New Password'));
+  var pass2Inp=el('input',{className:'auth-input',type:'password',placeholder:'Repeat new password',autocomplete:'new-password'});
+  pass2Inp.addEventListener('input',function(e){pass2Val=e.target.value;});
+  pass2Wrap.appendChild(pass2Inp);
+  var saveBtn=el('button',{className:'auth-btn'},'Set New Password');
+  saveBtn.addEventListener('click',async function(){
+    errDiv.textContent='';
+    if(passVal.length<6){errDiv.textContent='Password must be at least 6 characters.';return;}
+    if(passVal!==pass2Val){errDiv.textContent='Passwords do not match.';return;}
+    saveBtn.disabled=true;saveBtn.textContent='Saving...';
+    var result=await supa.updatePassword(passVal,accessToken);
+    if(result.ok){
+      // Clear hash from URL
+      history.replaceState(null,null,' ');
+      alert('Password updated! Please sign in with your new password.');
+      renderAuth();
+    } else {
+      errDiv.textContent=result.error;
+      saveBtn.disabled=false;saveBtn.textContent='Set New Password';
+    }
+  });
+  form.appendChild(passWrap);
+  form.appendChild(pass2Wrap);
+  form.appendChild(errDiv);
+  form.appendChild(saveBtn);
+  screen.appendChild(form);
+  setTimeout(function(){passInp.focus();},100);
+}
+
+window.onerror=function(msg,src,line,col,err){
+  document.body.innerHTML='<div style="padding:32px;font-family:sans-serif;color:#fff;background:#1A2740;min-height:100vh;">'
+    +'<h2 style="color:#C0392B;margin-bottom:16px;">⚠️ App Error</h2>'
+    +'<p style="margin-bottom:8px;font-size:14px;">'+msg+'</p>'
+    +'<p style="font-size:12px;opacity:.6;">Line '+line+' · '+src+'</p>'
+    +'<button onclick="location.reload()" style="margin-top:24px;padding:12px 24px;border-radius:8px;border:none;background:#C0392B;color:#fff;font-size:14px;cursor:pointer;">Reload</button>'
+    +'</div>';
+  return true;
+};
+if(!checkResetToken()){init();}
+
+</script>
+</body>
+</html>
