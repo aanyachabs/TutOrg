@@ -559,6 +559,24 @@ function mkCard(){
   args.forEach(function(c){if(c)d.appendChild(typeof c==='string'?document.createTextNode(c):c);});
   return d;
 }
+function mkInp(type,val,onChange,ph,extra){
+  var e=el('input',Object.assign({type:type,placeholder:ph||''},extra||{}));
+  e.style.background='var(--input-bg)';
+  e.style.color='var(--input-color)';
+  e.style.border='1.5px solid var(--border)';
+  e.style.borderRadius='10px';
+  e.style.padding='10px 14px';
+  e.style.fontSize='15px';
+  e.style.fontFamily='inherit';
+  e.style.width='100%';
+  e.style.outline='none';
+  e.style.boxSizing='border-box';
+  e.value=val!==undefined?String(val):'';
+  e.addEventListener('input',function(ev){onChange(ev.target.value);});
+  e.addEventListener('focus',function(){e.style.borderColor='var(--accent)';e.style.boxShadow='0 0 0 3px rgba(232,112,58,.15)';});
+  e.addEventListener('blur',function(){e.style.borderColor='var(--border)';e.style.boxShadow='none';});
+  return e;
+}
 function mkSel(val,opts,onChange){
   var e=el('select',{style:{background:'var(--input-bg)',color:'var(--input-color)',border:'1.5px solid var(--border)',borderRadius:10,padding:'10px 12px',fontSize:14,fontFamily:'inherit',width:'100%',outline:'none',WebkitAppearance:'none',appearance:'none'}});
   opts.forEach(function(opt){
