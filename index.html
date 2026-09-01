@@ -198,11 +198,11 @@ input[type=color]::-webkit-color-swatch{border:none;border-radius:50%;}
 input[type=color]::-moz-color-swatch{border:none;border-radius:50%;}
 input[type=color]::-moz-focus-inner{padding:0;border:0;}
 @media(max-width:480px){
-  .wb-lefttoolbar-mobile{min-width:60px !important;padding:8px 6px !important;left:8px !important;}
-  .wb-lefttoolbar-mobile button{width:44px !important;height:44px !important;font-size:20px !important;}
-  .wb-stylepanel-mobile{left:74px !important;min-width:160px !important;padding:14px !important;}
-  .wb-stylepanel-mobile .wb-color{width:26px !important;height:26px !important;}
-  .wb-stylepanel-mobile .wb-colorpick-wrap{width:26px !important;height:26px !important;}
+  .wb-lefttoolbar-mobile{min-width:64px !important;padding:8px 6px !important;left:8px !important;}
+  .wb-lefttoolbar-mobile button{width:48px !important;height:48px !important;font-size:22px !important;}
+  .wb-stylepanel-mobile{left:80px !important;min-width:190px !important;padding:14px !important;}
+  .wb-stylepanel-mobile .wb-color{width:30px !important;height:30px !important;}
+  .wb-stylepanel-mobile .wb-colorpick-wrap{width:30px !important;height:30px !important;}
 }
 .wb-text-box{position:absolute;top:16px;left:50%;transform:translateX(-50%);background:#fff;border-radius:14px;padding:14px;box-shadow:0 8px 32px rgba(0,0,0,.18);display:flex;flex-direction:column;gap:8px;z-index:10;min-width:280px;max-width:340px;}
 .msg-pre{background:var(--card);border-radius:12px;padding:16px;font-size:13px;white-space:pre-wrap;font-family:inherit;line-height:1.8;color:var(--text-primary);max-height:55vh;overflow-y:auto;-webkit-overflow-scrolling:touch;border:1px solid rgba(255,255,255,.08);}
@@ -2353,15 +2353,15 @@ function pgWhiteboard(){
     zIndex:10,display:'flex',flexDirection:'column',gap:4,
     background:'rgba(22,34,54,.97)',borderRadius:16,padding:'10px 8px',
     boxShadow:'0 4px 24px rgba(0,0,0,.6)',border:'1px solid rgba(255,255,255,.1)',
-    backdropFilter:'blur(12px)',minWidth:72,maxHeight:'88vh',overflowY:'auto'
+    backdropFilter:'blur(12px)',minWidth:80,maxHeight:'88vh',overflowY:'auto'
   }});
 
   function tbBtn(icon,id,title){
     var b=el('button',{title:title,style:{
-      width:52,height:52,borderRadius:13,border:'1.5px solid '+(tool===id?'rgba(232,112,58,.6)':'rgba(255,255,255,.08)'),cursor:'pointer',
+      width:60,height:60,borderRadius:14,border:'1.5px solid '+(tool===id?'rgba(232,112,58,.6)':'rgba(255,255,255,.08)'),cursor:'pointer',
       background:tool===id?'rgba(232,112,58,.25)':'rgba(255,255,255,.04)',
       color:tool===id?'#E8703A':'rgba(255,255,255,.75)',
-      fontSize:22,display:'flex',alignItems:'center',justifyContent:'center',
+      fontSize:26,display:'flex',alignItems:'center',justifyContent:'center',
       flexShrink:0,transition:'all .15s',fontFamily:'inherit'
     }},icon);
     b.addEventListener('click',function(){
@@ -2401,10 +2401,10 @@ function pgWhiteboard(){
   // flyout with color + size + clear, instead of a packed always-visible bar ──
   var stylePanel; // defined below, forward-referenced by styleBtn's click handler
   var styleBtn=el('button',{title:'Color & size',style:{
-    width:52,height:52,borderRadius:13,border:'1.5px solid rgba(255,255,255,.12)',cursor:'pointer',
+    width:60,height:60,borderRadius:14,border:'1.5px solid rgba(255,255,255,.12)',cursor:'pointer',
     background:'rgba(255,255,255,.04)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0
   }});
-  var styleBtnDot=el('div',{style:{width:26,height:26,borderRadius:'50%',background:penColor,border:'2px solid rgba(255,255,255,.5)',boxSizing:'border-box'}});
+  var styleBtnDot=el('div',{style:{width:32,height:32,borderRadius:'50%',background:penColor,border:'2px solid rgba(255,255,255,.5)',boxSizing:'border-box',flexShrink:0}});
   styleBtn.appendChild(styleBtnDot);
   styleBtn.addEventListener('click',function(e){
     e.stopPropagation();
@@ -2416,11 +2416,11 @@ function pgWhiteboard(){
 
   // Undo/Redo — clean SVG icons (unicode arrow glyphs render inconsistently
   // across devices/fonts, which is what caused the garbled icons before).
-  var UNDO_SVG='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
-  var REDO_SVG='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg>';
+  var UNDO_SVG='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
+  var REDO_SVG='<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg>';
   function tbActionBtn(svg,title){
     var b=el('button',{title:title,style:{
-      width:52,height:44,borderRadius:12,border:'1.5px solid rgba(255,255,255,.08)',cursor:'pointer',
+      width:60,height:50,borderRadius:13,border:'1.5px solid rgba(255,255,255,.08)',cursor:'pointer',
       background:'rgba(255,255,255,.04)',color:'rgba(255,255,255,.8)',
       display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0
     }});
@@ -2437,8 +2437,8 @@ function pgWhiteboard(){
 
   // Save PNG button
   var savBtn=el('button',{title:'Save PNG',style:{
-    width:52,height:52,borderRadius:13,border:'1.5px solid rgba(61,184,104,.3)',cursor:'pointer',
-    background:'rgba(46,184,104,.15)',color:'#3DB868',fontSize:22,
+    width:60,height:60,borderRadius:14,border:'1.5px solid rgba(61,184,104,.3)',cursor:'pointer',
+    background:'rgba(46,184,104,.15)',color:'#3DB868',fontSize:26,
     display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0
   }},'💾');
   savBtn.addEventListener('click',saveWB);
@@ -2449,24 +2449,29 @@ function pgWhiteboard(){
   // left panel when styleBtn is clicked, closes on outside click, mirroring
   // the reference: tools stay minimal, style options live in their own panel. ──
   var stylePanel=el('div',{className:'wb-stylepanel-mobile',style:{
-    position:'absolute',left:96,top:'50%',transform:'translateY(-50%)',
+    position:'absolute',left:118,top:'50%',transform:'translateY(-50%)',
     zIndex:11,display:'none',flexDirection:'column',gap:14,
     background:'rgba(22,34,54,.97)',borderRadius:16,padding:'18px',
     boxShadow:'0 4px 24px rgba(0,0,0,.6)',border:'1px solid rgba(255,255,255,.1)',
-    backdropFilter:'blur(12px)',minWidth:180
+    backdropFilter:'blur(12px)',minWidth:240
   }});
 
   function flyoutLabel(txt){return el('div',{style:{fontSize:10,color:'rgba(255,255,255,.4)',fontWeight:800,letterSpacing:'.08em',marginBottom:8}},txt);}
 
   var colorSection=el('div',{});
   colorSection.appendChild(flyoutLabel('COLOR'));
-  var colorGrid=el('div',{style:{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:10}});
+  // Flexbox with explicit flex:'0 0 auto' + aspectRatio on every swatch —
+  // the previous CSS grid let cells stretch swatches into ovals since a grid
+  // cell's cross-axis size isn't guaranteed to match its main-axis size.
+  // This layout can't do that: each swatch carries its own fixed circular size.
+  var colorGrid=el('div',{style:{display:'flex',flexWrap:'wrap',gap:12,maxWidth:216}});
   var colors=['#FFFFFF','#E8703A','#3DB868','#F0B429','#4A90D9','#E74C3C','#9B59B6','#000000'];
   colors.forEach(function(c){
     var d=el('div',{style:{
-      width:32,height:32,borderRadius:'50%',background:c,cursor:'pointer',
+      width:40,height:40,aspectRatio:'1',borderRadius:'50%',background:c,cursor:'pointer',
       border:c===penColor?'3px solid #fff':'2px solid rgba(255,255,255,.15)',
-      transition:'transform .15s',boxShadow:'0 2px 8px rgba(0,0,0,.4)',boxSizing:'border-box'
+      transition:'transform .15s',boxShadow:'0 2px 8px rgba(0,0,0,.4)',boxSizing:'border-box',
+      flex:'0 0 auto'
     }});
     d.addEventListener('click',function(){
       penColor=c;
@@ -2481,7 +2486,7 @@ function pgWhiteboard(){
   // oversized swatch chrome; the visible circle is a plain div we fully control,
   // and the real <input type=color> sits invisibly on top just to catch the tap
   // and open the OS color picker.
-  var colorPickWrap=el('div',{className:'wb-colorpick-wrap',style:{position:'relative',width:32,height:32,boxSizing:'border-box'}});
+  var colorPickWrap=el('div',{className:'wb-colorpick-wrap',style:{position:'relative',width:40,height:40,aspectRatio:'1',boxSizing:'border-box',flex:'0 0 auto'}});
   var colorPickSwatch=el('div',{style:{
     width:'100%',height:'100%',borderRadius:'50%',cursor:'pointer',
     background:'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)',
