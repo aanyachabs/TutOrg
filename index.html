@@ -319,7 +319,7 @@ const supa={
   },
   async resetPassword(email){
     try{
-      const redirectTo='https://aanyachabs.github.io/tutorg/dashboard.html';
+      const redirectTo=APP_URL;
       const r=await fetch(SUPA_URL+'/auth/v1/recover',{method:'POST',headers:this.hdr(),body:JSON.stringify({email:email,redirectTo:redirectTo})});
       return r.ok;
     }catch(e){return false;}
