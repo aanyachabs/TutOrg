@@ -198,10 +198,10 @@ input[type=color]::-webkit-color-swatch{border:none;border-radius:50%;}
 input[type=color]::-moz-color-swatch{border:none;border-radius:50%;}
 input[type=color]::-moz-focus-inner{padding:0;border:0;}
 @media(max-width:480px){
-  .wb-topbar-mobile{padding:8px 10px !important;gap:5px !important;bottom:10px !important;max-width:96vw !important;}
+  .wb-topbar-mobile{padding:10px 12px !important;gap:8px !important;bottom:10px !important;max-width:96vw !important;}
   .wb-topbar-mobile .wb-color{width:26px !important;height:26px !important;}
   .wb-topbar-mobile .wb-colorpick-wrap{width:26px !important;height:26px !important;}
-  .wb-topbar-mobile .wb-size-slider{width:64px !important;}
+  .wb-topbar-mobile .wb-size-slider{width:80px !important;}
   .wb-lefttoolbar-mobile{min-width:60px !important;padding:8px 6px !important;left:8px !important;}
   .wb-lefttoolbar-mobile button{width:44px !important;height:44px !important;font-size:20px !important;}
 }
@@ -2409,30 +2409,65 @@ function pgWhiteboard(){
   wrap.appendChild(tb);
 
   // ── TOP TOOLBAR (size, color, undo/redo) ──
+  // Rebuilt as two clearly-separated rows with real breathing room, instead of
+  // one long strip of dividers where everything fought for space.
   var topBar=el('div',{className:'wb-topbar-mobile',style:{
-    position:'absolute',bottom:16,left:'50%',transform:'translateX(-50%)',
-    zIndex:10,display:'flex',gap:6,alignItems:'center',
-    background:'rgba(22,34,54,.97)',borderRadius:20,padding:'10px 14px',
-    boxShadow:'0 4px 24px rgba(0,0,0,.6)',border:'1px solid rgba(255,255,255,.1)',
-    backdropFilter:'blur(12px)',flexWrap:'wrap',justifyContent:'center',maxWidth:'92vw',boxSizing:'border-box'
+    position:'absolute',bottom:20,left:'50%',transform:'translateX(-50%)',
+    zIndex:10,display:'flex',flexDirection:'column',gap:12,
+    background:'rgba(22,34,54,.97)',borderRadius:22,padding:'16px 20px',
+    boxShadow:'0 6px 28px rgba(0,0,0,.6)',border:'1px solid rgba(255,255,255,.1)',
+    backdropFilter:'blur(12px)',maxWidth:'94vw',boxSizing:'border-box',alignItems:'center'
   }});
 
-  // Undo/Redo
-  var undoB=el('button',{style:{background:'rgba(255,255,255,.08)',border:'none',color:'rgba(255,255,255,.8)',cursor:'pointer',fontSize:22,padding:'6px 10px',borderRadius:10}},'↩');
-  var redoB=el('button',{style:{background:'rgba(255,255,255,.08)',border:'none',color:'rgba(255,255,255,.8)',cursor:'pointer',fontSize:22,padding:'6px 10px',borderRadius:10}},'↪');
-  undoB.title='Undo';redoB.title='Redo';
+  function wbIconBtn(txt,title){
+    return el('button',{title:title,style:{
+      background:'rgba(255,255,255,.08)',border:'none',color:'rgba(255,255,255,.85)',
+      cursor:'pointer',fontSize:20,width:38,height:38,borderRadius:11,
+      display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0
+    }},txt);
+  }
+  function wbDivider(){return el('div',{style:{width:1,alignSelf:'stretch',background:'rgba(255,255,255,.14)',flexShrink:0}});}
+  function wbGroupLabel(txt){return el('span',{style:{fontSize:10,color:'rgba(255,255,255,.4)',fontWeight:800,letterSpacing:'.08em',flexShrink:0}},txt);}
+
+  // ROW 1 — actions: undo/redo, clear, zoom. These don't relate to drawing style,
+  // so they get their own row rather than competing with color/size for space.
+  var row1=el('div',{style:{display:'flex',gap:10,alignItems:'center',flexWrap:'wrap',justifyContent:'center'}});
+
+  var undoB=wbIconBtn('↩','Undo');
+  var redoB=wbIconBtn('↪','Redo');
   undoB.addEventListener('click',function(){if(hIdx>0){hIdx--;restoreSnap();}});
   redoB.addEventListener('click',function(){if(hIdx<history.length-1){hIdx++;restoreSnap();}});
-  topBar.appendChild(undoB);topBar.appendChild(redoB);
+  row1.appendChild(undoB);row1.appendChild(redoB);
+  row1.appendChild(wbDivider());
 
-  // Divider
-  topBar.appendChild(el('div',{style:{width:1,height:20,background:'rgba(255,255,255,.15)'}}));
+  var clrB=el('button',{style:{background:'rgba(231,76,60,.15)',border:'1px solid rgba(231,76,60,.35)',color:'#E74C3C',borderRadius:11,padding:'9px 16px',fontSize:13,fontWeight:700,cursor:'pointer',fontFamily:'inherit',flexShrink:0}},'Clear');
+  clrB.addEventListener('click',function(){
+    var ctx=cv.getContext('2d');
+    ctx.fillStyle=bgColor;ctx.fillRect(0,0,cv.width,cv.height);
+    elements=[];renderElements();snap();
+  });
+  row1.appendChild(clrB);
+  row1.appendChild(wbDivider());
 
-  // Color picker row
+  var zoomOut=wbIconBtn('−','Zoom out');
+  var zoomIn=wbIconBtn('+','Zoom in');
+  var zoomLbl=el('span',{style:{fontSize:14,color:'rgba(255,255,255,.75)',fontWeight:700,minWidth:48,textAlign:'center',flexShrink:0}},'100%');
+  zoomOut.addEventListener('click',function(){zoom=Math.max(.25,zoom-.1);applyTransform();zoomLbl.textContent=Math.round(zoom*100)+'%';});
+  zoomIn.addEventListener('click',function(){zoom=Math.min(4,zoom+.1);applyTransform();zoomLbl.textContent=Math.round(zoom*100)+'%';});
+  row1.appendChild(zoomOut);row1.appendChild(zoomLbl);row1.appendChild(zoomIn);
+
+  topBar.appendChild(row1);
+  topBar.appendChild(el('div',{style:{width:'100%',height:1,background:'rgba(255,255,255,.1)'}}));
+
+  // ROW 2 — drawing style: color + size. Grouped together since they both
+  // describe "what the next stroke looks like."
+  var row2=el('div',{style:{display:'flex',gap:14,alignItems:'center',flexWrap:'wrap',justifyContent:'center'}});
+
+  var colorGroup=el('div',{style:{display:'flex',gap:9,alignItems:'center',flexWrap:'wrap',justifyContent:'center'}});
   var colors=['#FFFFFF','#E8703A','#3DB868','#F0B429','#4A90D9','#E74C3C','#9B59B6','#000000'];
   colors.forEach(function(c){
     var d=el('div',{style:{
-      width:30,height:30,borderRadius:'50%',background:c,cursor:'pointer',
+      width:32,height:32,borderRadius:'50%',background:c,cursor:'pointer',
       border:c===penColor?'3px solid #fff':'2px solid rgba(255,255,255,.15)',
       transition:'transform .15s',flexShrink:0,boxShadow:'0 2px 8px rgba(0,0,0,.4)',boxSizing:'border-box'
     }});
@@ -2442,14 +2477,14 @@ function pgWhiteboard(){
       d.style.border='2px solid #fff';
     });
     d.className='wb-color';
-    topBar.appendChild(d);
+    colorGroup.appendChild(d);
   });
 
   // Custom color — wrapped so the native input can never render its own
   // oversized swatch chrome; the visible circle is a plain div we fully control,
   // and the real <input type=color> sits invisibly on top just to catch the tap
   // and open the OS color picker.
-  var colorPickWrap=el('div',{className:'wb-colorpick-wrap',style:{position:'relative',width:30,height:30,flexShrink:0,boxSizing:'border-box'}});
+  var colorPickWrap=el('div',{className:'wb-colorpick-wrap',style:{position:'relative',width:32,height:32,flexShrink:0,boxSizing:'border-box'}});
   var colorPickSwatch=el('div',{style:{
     width:'100%',height:'100%',borderRadius:'50%',cursor:'pointer',
     background:'conic-gradient(red,yellow,lime,cyan,blue,magenta,red)',
@@ -2466,45 +2501,24 @@ function pgWhiteboard(){
   });
   colorPickWrap.appendChild(colorPickSwatch);
   colorPickWrap.appendChild(colorPick);
-  topBar.appendChild(colorPickWrap);
+  colorGroup.appendChild(colorPickWrap);
+  row2.appendChild(colorGroup);
+  row2.appendChild(wbDivider());
 
-  topBar.appendChild(el('div',{style:{width:1,height:20,background:'rgba(255,255,255,.15)'}}));
-
-  // Size label
-  var sizeLabel=el('span',{style:{fontSize:13,color:'rgba(255,255,255,.5)',fontWeight:700}},'SIZE');
-  topBar.appendChild(sizeLabel);
-
-  // Size slider
-  var sizeSlider=el('input',{className:'wb-size-slider',type:'range',min:'1',max:'40',value:'3',style:{width:90,accentColor:'#E8703A',cursor:'pointer',height:6,flexShrink:0}});
-  var sizeVal=el('span',{style:{fontSize:14,color:'rgba(255,255,255,.9)',fontWeight:800,minWidth:22,textAlign:'center',flexShrink:0}},'3');
+  var sizeGroup=el('div',{style:{display:'flex',gap:10,alignItems:'center',flexShrink:0}});
+  var sizeLabel=wbGroupLabel('SIZE');
+  var sizeSlider=el('input',{className:'wb-size-slider',type:'range',min:'1',max:'40',value:'3',style:{width:120,accentColor:'#E8703A',cursor:'pointer',height:6,flexShrink:0}});
+  var sizeVal=el('span',{style:{fontSize:14,color:'rgba(255,255,255,.9)',fontWeight:800,minWidth:24,textAlign:'center',flexShrink:0}},'3');
   sizeSlider.addEventListener('input',function(){
     var v=parseInt(sizeSlider.value);
     if(tool==='eraser')eraserSize=v;
     else penSize=v;
     sizeVal.textContent=v;
   });
-  topBar.appendChild(sizeSlider);
-  topBar.appendChild(sizeVal);
+  sizeGroup.appendChild(sizeLabel);sizeGroup.appendChild(sizeSlider);sizeGroup.appendChild(sizeVal);
+  row2.appendChild(sizeGroup);
 
-  topBar.appendChild(el('div',{style:{width:1,height:20,background:'rgba(255,255,255,.15)'}}));
-
-  // Clear button
-  var clrB=el('button',{style:{background:'rgba(231,76,60,.15)',border:'1px solid rgba(231,76,60,.3)',color:'#E74C3C',borderRadius:8,padding:'4px 10px',fontSize:11,fontWeight:700,cursor:'pointer',fontFamily:'inherit'}},'Clear');
-  clrB.addEventListener('click',function(){
-    var ctx=cv.getContext('2d');
-    ctx.fillStyle=bgColor;ctx.fillRect(0,0,cv.width,cv.height);
-    elements=[];renderElements();snap();
-  });
-  topBar.appendChild(clrB);
-
-  // Zoom controls
-  topBar.appendChild(el('div',{style:{width:1,height:20,background:'rgba(255,255,255,.15)'}}));
-  var zoomOut=el('button',{style:{background:'rgba(255,255,255,.08)',border:'none',color:'rgba(255,255,255,.8)',cursor:'pointer',fontSize:22,padding:'6px 10px',borderRadius:10}},'−');
-  var zoomIn=el('button',{style:{background:'rgba(255,255,255,.08)',border:'none',color:'rgba(255,255,255,.8)',cursor:'pointer',fontSize:22,padding:'6px 10px',borderRadius:10}},'+');
-  var zoomLbl=el('span',{style:{fontSize:13,color:'rgba(255,255,255,.6)',fontWeight:700,minWidth:42,textAlign:'center'}},'100%');
-  zoomOut.addEventListener('click',function(){zoom=Math.max(.25,zoom-.1);applyTransform();zoomLbl.textContent=Math.round(zoom*100)+'%';});
-  zoomIn.addEventListener('click',function(){zoom=Math.min(4,zoom+.1);applyTransform();zoomLbl.textContent=Math.round(zoom*100)+'%';});
-  topBar.appendChild(zoomOut);topBar.appendChild(zoomLbl);topBar.appendChild(zoomIn);
+  topBar.appendChild(row2);
 
   wrap.appendChild(topBar);
 
