@@ -43,7 +43,7 @@
   --slot-bg:#F5E8E1;--drop-bg:#F7F4F0;--drop-border:#EAE4DD;
   --text-primary:#1A2740;--text-muted:#8A8078;
 }
-html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text-primary);color-scheme:dark;}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text-primary);color-scheme:dark;word-spacing:0.16em;}
 [data-theme="light"] html,[data-theme="light"] body,body[data-theme="light"]{color-scheme:light;}
 select option{background:#0F1C2E;color:#ffffff;}
 [data-theme="light"] select option{background:#ffffff;color:var(--text-primary);}
@@ -1071,7 +1071,6 @@ function pgDashboard(){
     var att=S.payments[attKey]||'none';
     var row=el('div',{style:{display:'flex',gap:14,padding:'12px 0',borderBottom:'1px solid var(--border)',fontSize:13,alignItems:'center'}});
     row.appendChild(el('span',{style:{fontWeight:800,color:'var(--accent)',minWidth:56,fontSize:14,flexShrink:0}},slot.time));
-    row.appendChild(el('span',{style:{color:'var(--muted)',fontSize:12,flexShrink:0}},'  '));
     row.appendChild(el('span',{style:{color:'var(--text-primary)',flex:1,fontWeight:600}},stu?stu.name:'?'));
     if(slot.note)row.appendChild(el('span',{style:{color:'var(--muted)',fontSize:11}},slot.note));
     var attBtn=el('button',{style:{
@@ -1224,14 +1223,14 @@ function openStudentModal(editIdx){
     var lbl=mode==='per-session'?'Per Session':'Flat Monthly';
     var btn=el('button',{style:{
       padding:'8px 16px',border:'none',cursor:'pointer',fontWeight:700,fontSize:12,fontFamily:'inherit',
-      background:form.billingMode===mode?'var(--navy)':'#fff',
+      background:form.billingMode===mode?'var(--accent)':'var(--input-bg)',
       color:form.billingMode===mode?'#fff':'var(--muted)',transition:'all .2s'
     }},lbl);
     btn.addEventListener('click',function(){
       form.billingMode=mode;
       modeRow.querySelectorAll('button').forEach(function(b,i){
         var m_=['per-session','monthly'][i];
-        b.style.background=form.billingMode===m_?'var(--navy)':'#fff';
+        b.style.background=form.billingMode===m_?'var(--accent)':'var(--input-bg)';
         b.style.color=form.billingMode===m_?'#fff':'var(--muted)';
       });
       monthlyRateRow.style.display=mode==='monthly'?'flex':'none';
@@ -1406,13 +1405,13 @@ function openScheduleModal(){
     var btn=el('button',{style:{
       padding:'8px 18px',border:'none',cursor:'pointer',fontWeight:700,
       fontSize:12,fontFamily:'inherit',transition:'all .2s',
-      background:idx===0?'var(--navy)':'#fff',
+      background:idx===0?'var(--accent)':'var(--input-bg)',
       color:idx===0?'#fff':'var(--muted)'
     }},lbl);
     btn.addEventListener('click',function(){
       allDaysMode=idx===0;
       modeRow.querySelectorAll('button').forEach(function(b,i){
-        b.style.background=i===idx?'var(--navy)':'#fff';
+        b.style.background=i===idx?'var(--accent)':'var(--input-bg)';
         b.style.color=i===idx?'#fff':'var(--muted)';
       });
       dayGrid.style.display=allDaysMode?'none':'grid';
@@ -1501,7 +1500,7 @@ function pgBilling(){
       var msgText='Dear '+b.stu.parentName+',\n\nHope you are well! Here is the fee summary for '+b.stu.name+' for '+ML+':\n\nGrade: '+b.stu.gradeNum+'  |  Subject: '+(b.stu.subject||'-')+'\nSessions completed: '+b.count+'\n'+rateNote+'\n\n'+sessionLines+'\n\nTotal payable: Rs.'+b.total+'\n\n'+((!b.isMonthly&&b.count>b.stu.basePackage)?'Note: '+(b.count-b.stu.basePackage)+' extra session(s) beyond base package.\n\n':'')+buildPolicyText()+'\n\nThank you!';
       var c=mkCard();
       var t=el('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:8}});
-      t.appendChild(el('div',{},el('div',{style:{fontWeight:800,fontSize:15,color:'var(--text-primary)',fontWeight:800}},b.stu.name),el('div',{style:{color:'var(--muted)',fontSize:12,marginTop:3}},'Gr.'+b.stu.gradeNum+'  '+(b.stu.subject||'All')+'  '+b.stu.parentName)));
+      t.appendChild(el('div',{},el('div',{style:{fontWeight:800,fontSize:15,color:'var(--text-primary)',fontWeight:800}},b.stu.name),el('div',{style:{color:'var(--muted)',fontSize:12,marginTop:3}},'Gr.'+b.stu.gradeNum+' · '+(b.stu.subject||'All')+' · '+b.stu.parentName)));
       var ri=el('div',{style:{display:'flex',gap:7,alignItems:'center',flexWrap:'wrap'}});
       ri.appendChild(bdg(b.count+' sessions'));
       ri.appendChild(bdg(b.isMonthly?'Flat Monthly':'Rs.'+b.rate+'/hr','var(--green)','var(--greenL)'));
